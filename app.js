@@ -2,24 +2,50 @@ function puts(){
   console.log.apply(console, arguments);
 }
 
-function convert(text){
-  var src = $(".input").val();
-  var lines = src.split("\n");
-  var rows = _(lines).map(function(line){
-    return line.split(",");
-  });
+var AppM = Backbone.Model.extend({
+  defaults: {
+    input: "",
+    rows: []
+  },
 
-  $(".output_json").val(JSON.stringify(rows));
-}
+  parse: function(){
+    var text = this.get("input");
+    var lines = text.split("\n");
+    this.rows = _(lines).map(function(line){
+      return line.split(",");
+    });
+  },
+
+  toJson: function(){
+    return JSON.stringify(this.rows);
+  }
+});
+
+var AppV = Backbone.View.extend({
+  initialize: function(){
+    this.listenTo(this.model, "change", this.render);
+    this.oninput_input();
+  },
+
+  events: {
+    "input .input": "oninput_input"
+  },
+
+  render: function(){
+    this.model.parse();
+    this.$(".output_json").val(this.model.toJson());
+    return this;
+  },
+
+  oninput_input: function(){
+    this.model.set("input", this.$(".input").val());
+  }
+});
 
 $(function(){
-
-  // Events
-
-  $(".input").on("input", convert);
-  
-  // Init
-
-  convert();
-
+  var appM = new AppM();
+  var appV = new AppV({
+    model: appM,
+    el: $("body")[0]
+  });
 });
