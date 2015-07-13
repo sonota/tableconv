@@ -18,6 +18,18 @@ var AppM = Backbone.Model.extend({
 
   toJson: function(){
     return JSON.stringify(this.rows);
+  },
+
+  toHtmlTable: function(){
+    var h = "";
+    _(this.rows).each(function(cols){
+      h += '<tr>';
+      _(cols).each(function(col){
+        h += '<td>' + col + '</td>';
+      });
+      h += '</tr>';
+    });
+    return h;
   }
 });
 
@@ -34,6 +46,7 @@ var AppV = Backbone.View.extend({
   render: function(){
     this.model.parse();
     this.$(".output_json").val(this.model.toJson());
+    this.$(".html_table").html(this.model.toHtmlTable());
     return this;
   },
 
