@@ -22,7 +22,9 @@ var AppM = Backbone.Model.extend({
 
   toTsv: function(){
     return _(this.rows).map(function(cols){
-      return cols.join("\t") + "\n";
+      return cols.map(function(col){
+        return JSON.stringify(col); // quote by double quote
+      }).join("\t") + "\n";
     }).join("");
   },
 
