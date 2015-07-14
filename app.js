@@ -2,6 +2,15 @@ function puts(){
   console.log.apply(console, arguments);
 }
 
+function escapeHtml(s){
+  return s
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+}
+
 var AppM = Backbone.Model.extend({
   defaults: {
     input: "",
@@ -33,7 +42,7 @@ var AppM = Backbone.Model.extend({
     _(this.rows).each(function(cols){
       h += '<tr>';
       _(cols).each(function(col){
-        h += '<td>' + col + '</td>';
+        h += '<td>' + escapeHtml(col) + '</td>';
       });
       h += '</tr>';
     });
