@@ -47,6 +47,29 @@ var AppM = Backbone.Model.extend({
       h += '</tr>';
     });
     return h;
+  },
+
+  toGfmTable: function(){
+    var numCols = 0;
+    _(this.rows).each(function(cols){
+      numCols = Math.max(numCols, cols.length);
+    });
+
+    var headCols = _.range(0, numCols).map(function(ci){
+      return ci + 1;
+    });
+    var s = "| " + headCols.join(" | ") + " |\n";
+
+    var headLineCols = _.range(0, numCols).map(function(){
+      return "---";
+    });
+    s += "| " + headLineCols.join(" | ") + " |\n";
+
+    s += _(this.rows).map(function(cols){
+      return "| " + cols.join(" | ") + " |\n";
+    }).join("");
+
+    return s;
   }
 });
 
@@ -64,6 +87,7 @@ var AppV = Backbone.View.extend({
     this.model.parse();
     this.$(".output_json").val(this.model.toJson());
     this.$(".output_tsv").val(this.model.toTsv());
+    this.$(".output_gfm_table").html(this.model.toGfmTable());
     this.$(".html_table").html(this.model.toHtmlTable());
     return this;
   },
