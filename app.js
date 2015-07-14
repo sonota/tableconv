@@ -20,6 +20,12 @@ var AppM = Backbone.Model.extend({
     return JSON.stringify(this.rows);
   },
 
+  toTsv: function(){
+    return _(this.rows).map(function(cols){
+      return cols.join("\t") + "\n";
+    }).join("");
+  },
+
   toHtmlTable: function(){
     var h = "";
     _(this.rows).each(function(cols){
@@ -46,6 +52,7 @@ var AppV = Backbone.View.extend({
   render: function(){
     this.model.parse();
     this.$(".output_json").val(this.model.toJson());
+    this.$(".output_tsv").val(this.model.toTsv());
     this.$(".html_table").html(this.model.toHtmlTable());
     return this;
   },
