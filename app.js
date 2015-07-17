@@ -14,7 +14,8 @@ function escapeHtml(s){
 var AppM = Backbone.Model.extend({
   defaults: {
     input: "",
-    rows: []
+    rows: [],
+    inputType: null // regexp | mysql | postgresql
   },
 
   parse: function(){
@@ -80,7 +81,8 @@ var AppV = Backbone.View.extend({
   },
 
   events: {
-    "input .input": "oninput_input"
+    "input .input": "oninput_input",
+    "change [name=input_type]": "onchange_inputType"
   },
 
   render: function(){
@@ -94,6 +96,10 @@ var AppV = Backbone.View.extend({
 
   oninput_input: function(){
     this.model.set("input", this.$(".input").val());
+  },
+
+  onchange_inputType: function(){
+    this.model.set("inputType", this.$("[name=input_type]:checked").val());
   }
 });
 
