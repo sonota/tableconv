@@ -11,6 +11,10 @@ function escapeHtml(s){
       .replace(/'/g, "&#39;");
 }
 
+function strip(s){
+  return s.replace(/^\s+|\s+$/g, "");
+}
+
 var AppM = Backbone.Model.extend({
   defaults: {
     input: "",
@@ -156,7 +160,7 @@ var AppV = Backbone.View.extend({
   },
 
   oninput_headerCols: function(){
-    this.model.set("headerCols", this.$(".header_cols").val().split(","));
+    this.model.set("headerCols", this.$(".header_cols").val().split(",").map(strip));
   }
 });
 
