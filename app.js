@@ -15,7 +15,8 @@ var AppM = Backbone.Model.extend({
   defaults: {
     input: "",
     rows: [],
-    inputType: null // regexp | mysql | postgresql
+    inputType: null, // regexp | mysql | postgresql
+    headerCols: ""
   },
 
   parse: function(){
@@ -51,20 +52,41 @@ var AppM = Backbone.Model.extend({
     }
   },
 
+  hasHeaderCols: function(){
+    return this.get("headerCols").length > 0;
+  },
+
   toJson: function(){
-    return JSON.stringify(this.rows);
+    return JSON.stringify({
+      header: this.get("headerCols"),
+      rows: this.rows
+    });
   },
 
   toTsv: function(){
-    return _(this.rows).map(function(cols){
+    var tsv = "";
+    if(this.hasHeaderCols()){
+      tsv += this.get("headerCols").map(function(col){
+        return JSON.stringify(col); // quote by double quote
+      }).join("\t") + "\n";
+    }
+    tsv += _(this.rows).map(function(cols){
       return cols.map(function(col){
         return JSON.stringify(col); // quote by double quote
       }).join("\t") + "\n";
     }).join("");
+    return tsv;
   },
 
   toHtmlTable: function(){
     var h = "";
+
+    if(this.hasHeaderCols()){
+      h += '<tr>' + this.get("headerCols").map(function(col){
+        return '<th>'+col+'</th>';
+      }) + '</tr>';
+    }
+
     _(this.rows).each(function(cols){
       h += '<tr>';
       _(cols).each(function(col){
@@ -81,9 +103,14 @@ var AppM = Backbone.Model.extend({
       numCols = Math.max(numCols, cols.length);
     });
 
-    var headCols = _.range(0, numCols).map(function(ci){
-      return ci + 1;
-    });
+    var headCols;
+    if(this.hasHeaderCols()){
+      headCols = this.get("headerCols");
+    }else{
+      headCols = _.range(0, numCols).map(function(ci){
+        return ci + 1;
+      });
+    }
     var s = "| " + headCols.join(" | ") + " |\n";
 
     var headLineCols = _.range(0, numCols).map(function(){
@@ -107,7 +134,8 @@ var AppV = Backbone.View.extend({
 
   events: {
     "input .input": "oninput_input",
-    "change [name=input_type]": "onchange_inputType"
+    "change [name=input_type]": "onchange_inputType",
+    "input .header_cols": "oninput_headerCols"
   },
 
   render: function(){
@@ -125,6 +153,10 @@ var AppV = Backbone.View.extend({
 
   onchange_inputType: function(){
     this.model.set("inputType", this.$("[name=input_type]:checked").val());
+  },
+
+  oninput_headerCols: function(){
+    this.model.set("headerCols", this.$(".header_cols").val().split(","));
   }
 });
 

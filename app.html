@@ -27,8 +27,12 @@ table {
   border-collapse: collapse;
 }
 
-td {
+th, td {
   border: solid 1px #aaa;
+}
+
+th {
+  background: #ddd;
 }
 
   </style>
@@ -56,6 +60,9 @@ td {
 <label>
   <input type="radio" name="input_type" value="postgresql" /> PostgreSQL
 </label>
+
+<br />
+header: <input type="text" class="header_cols" name="header_cols" value="" style="width: 80%;" />
 
 <hr />
 
