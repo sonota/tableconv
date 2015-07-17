@@ -34,6 +34,16 @@ var AppM = Backbone.Model.extend({
         return cols;
       });
       break;
+    case "postgresql":
+      this.rows = _.chain(lines).filter(function(line){
+        return ! line.match( /^\-/ );
+      }).map(function(line){
+        var cols = (" |" + line + " | ").split(" | ");
+        cols.shift();
+        cols.pop();
+        return cols;
+      });
+      break;
     default:
       this.rows = _(lines).map(function(line){
         return line.split(",");
