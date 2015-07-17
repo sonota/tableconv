@@ -19,11 +19,26 @@ var AppM = Backbone.Model.extend({
   },
 
   parse: function(){
+    var me = this;
     var text = this.get("input");
     var lines = text.split("\n");
-    this.rows = _(lines).map(function(line){
-      return line.split(",");
-    });
+
+    switch(this.get("inputType")){
+    case "mysql":
+      this.rows = _.chain(lines).filter(function(line){
+        return ! line.match( /^\+/ );
+      }).map(function(line){
+        var cols = (" " + line + " ").split(" | ");
+        cols.shift();
+        cols.pop();
+        return cols;
+      });
+      break;
+    default:
+      this.rows = _(lines).map(function(line){
+        return line.split(",");
+      });
+    }
   },
 
   toJson: function(){
