@@ -134,10 +134,10 @@ var AppV = Backbone.View.extend({
   initialize: function(){
     this.listenTo(this.model, "change", this.render);
 
-    this.model.set("inputType", this.$("[name=input_type]:checked").val(),
+    this.model.set("inputType", this.getInputType(),
                    { silent: true });
     this.model.set("headerCols",
-                   this.$(".header_cols").val().split(",").map(strip),
+                   this.getHeaderCols(),
                    { silent: true });
     this.model.set("input", this.$(".input").val(), { silent: true });
 
@@ -164,11 +164,19 @@ var AppV = Backbone.View.extend({
   },
 
   onchange_inputType: function(){
-    this.model.set("inputType", this.$("[name=input_type]:checked").val());
+    this.model.set("inputType", this.getInputType());
   },
 
   oninput_headerCols: function(){
-    this.model.set("headerCols", this.$(".header_cols").val().split(",").map(strip));
+    this.model.set("headerCols", this.getHeaderCols());
+  },
+
+  getInputType: function(){
+    return this.$("[name=input_type]:checked").val();
+  },
+
+  getHeaderCols: function(){
+    return this.$(".header_cols").val().split(",").map(strip);
   }
 });
 
