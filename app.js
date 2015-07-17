@@ -133,7 +133,15 @@ var AppM = Backbone.Model.extend({
 var AppV = Backbone.View.extend({
   initialize: function(){
     this.listenTo(this.model, "change", this.render);
-    this.oninput_input();
+
+    this.model.set("inputType", this.$("[name=input_type]:checked").val(),
+                   { silent: true });
+    this.model.set("headerCols",
+                   this.$(".header_cols").val().split(",").map(strip),
+                   { silent: true });
+    this.model.set("input", this.$(".input").val(), { silent: true });
+
+    this.render();
   },
 
   events: {
