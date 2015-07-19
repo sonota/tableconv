@@ -47,6 +47,14 @@ function padLeft(s, n){
   return ret;
 }
 
+function mkstr(s, n){
+  var ret = "";
+  for(var i=0; i<n; i++){
+    ret += s;
+  }
+  return ret;
+}
+
 var AppM = Backbone.Model.extend({
   defaults: {
     input: "",
@@ -149,6 +157,9 @@ var AppM = Backbone.Model.extend({
         maxlens[ci] = Math.max(maxlens[ci] || 0, strlen(col));
       });
     });
+    maxlens = maxlens.map(function(len){
+      return Math.max(len, 3);
+    });
 
     var s = "";
 
@@ -166,10 +177,11 @@ var AppM = Backbone.Model.extend({
     });
     s += "\n";
 
-    var headLineCols = _.range(0, numCols).map(function(){
-      return "---";
+    s += "|";
+    _(_.range(0, numCols)).each(function(ci){
+      s += " " + mkstr("-", maxlens[ci]) + " |";
     });
-    s += "| " + headLineCols.join(" | ") + " |\n";
+    s += "\n";
 
     s += _(this.rows).map(function(cols){
       var line = "|";
