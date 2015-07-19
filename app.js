@@ -63,8 +63,8 @@ var AppM = Backbone.Model.extend({
     switch(this.get("inputType")){
     case "mysql":
       this.rows = _.chain(lines).filter(function(line){
-        return ! (line.match( /^\+/ )
-                  || line.match( /^\s*$/ )
+        return ! ( /^\+/.test(line)
+                   || /^\s*$/.test(line)
                  );
       }).map(function(line){
         var cols = (" " + line + " ").split(" | ");
@@ -75,8 +75,8 @@ var AppM = Backbone.Model.extend({
       break;
     case "postgresql":
       this.rows = _.chain(lines).filter(function(line){
-        return ! (line.match( /^\-/ )
-                  || line.match( /^\s*$/ )
+        return ! ( /^\-/.test(line)
+                  || /^\s*$/.test(line)
                  );
       }).map(function(line){
         var cols = (" |" + line + " | ").split(" | ");
