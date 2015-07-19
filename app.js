@@ -15,6 +15,15 @@ function strip(s){
   return s.replace(/^\s+|\s+$/g, "");
 }
 
+function padLeft(s, n){
+  var pad = n - s.length;
+  var ret = s;
+  for(var i=0; i<pad; i++){
+    ret = ret += " ";
+  }
+  return ret;
+}
+
 var AppM = Backbone.Model.extend({
   defaults: {
     input: "",
@@ -122,8 +131,19 @@ var AppM = Backbone.Model.extend({
     });
     s += "| " + headLineCols.join(" | ") + " |\n";
 
+    var maxlens = [];
+    _(this.rows).each(function(cols){
+      _(cols).each(function(col, ci){
+        maxlens[ci] = Math.max(maxlens[ci] || 0, col.length);
+      });
+    });
+
     s += _(this.rows).map(function(cols){
-      return "| " + cols.join(" | ") + " |\n";
+      var line = "|";
+      _(cols).each(function(col, ci){
+        line += " " + padLeft(col, maxlens[ci]) + " |";
+      });
+      return line += "\n";
     }).join("");
 
     return s;
