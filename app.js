@@ -143,6 +143,15 @@ var AppM = Backbone.Model.extend({
       numCols = Math.max(numCols, cols.length);
     });
 
+    var maxlens = [];
+    _(this.rows).each(function(cols){
+      _(cols).each(function(col, ci){
+        maxlens[ci] = Math.max(maxlens[ci] || 0, strlen(col));
+      });
+    });
+
+    var s = "";
+
     var headCols;
     if(this.hasHeaderCols()){
       headCols = this.get("headerCols");
@@ -151,19 +160,16 @@ var AppM = Backbone.Model.extend({
         return ci + 1;
       });
     }
-    var s = "| " + headCols.join(" | ") + " |\n";
+    s += "|";
+    _(headCols).each(function(col, ci){
+      s += " " + padLeft(col, maxlens[ci]) + " |";
+    });
+    s += "\n";
 
     var headLineCols = _.range(0, numCols).map(function(){
       return "---";
     });
     s += "| " + headLineCols.join(" | ") + " |\n";
-
-    var maxlens = [];
-    _(this.rows).each(function(cols){
-      _(cols).each(function(col, ci){
-        maxlens[ci] = Math.max(maxlens[ci] || 0, strlen(col));
-      });
-    });
 
     s += _(this.rows).map(function(cols){
       var line = "|";
