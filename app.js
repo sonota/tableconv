@@ -70,7 +70,7 @@ var AppM = Backbone.Model.extend({
         var cols = (" " + line + " ").split(" | ");
         cols.shift();
         cols.pop();
-        return cols;
+        return cols.map(strip);
       });
       break;
     case "postgresql":
@@ -82,7 +82,7 @@ var AppM = Backbone.Model.extend({
         var cols = (" |" + line + " | ").split(" | ");
         cols.shift();
         cols.pop();
-        return cols;
+        return cols.map(strip);
       });
       break;
     default:
