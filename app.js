@@ -15,8 +15,31 @@ function strip(s){
   return s.replace(/^\s+|\s+$/g, "");
 }
 
+/**
+ * http://winter-tail.sakura.ne.jp/pukiwiki/index.php?JavaScript%A4%A2%A4%EC%A4%B3%A4%EC%2F%C0%B5%B5%AC%C9%BD%B8%BD%A5%D1%A5%BF%A1%BC%A5%F3
+ */
+function includeZenkaku(s){
+  return /[^ -~｡-ﾟ]/.test(s);
+}
+
+function strlen(s){
+  if( includeZenkaku(s) ){
+    var len = 0;
+    for(var i=0,slen=s.length; i<slen; i++){
+      if( includeZenkaku(s.charAt(i)) ){
+        len += 2;
+      }else{
+        len += 1;
+      }
+    }
+    return len;
+  }else{
+    return s.length;
+  }
+}
+
 function padLeft(s, n){
-  var pad = n - s.length;
+  var pad = n - strlen(s);
   var ret = s;
   for(var i=0; i<pad; i++){
     ret = ret += " ";
@@ -134,7 +157,7 @@ var AppM = Backbone.Model.extend({
     var maxlens = [];
     _(this.rows).each(function(cols){
       _(cols).each(function(col, ci){
-        maxlens[ci] = Math.max(maxlens[ci] || 0, col.length);
+        maxlens[ci] = Math.max(maxlens[ci] || 0, strlen(col));
       });
     });
 
