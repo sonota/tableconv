@@ -107,10 +107,14 @@ var AppM = Backbone.Model.extend({
   },
 
   toJson: function(){
-    return JSON.stringify({
-      header: this.get("headerCols"),
-      rows: this.rows
-    });
+    var json = '{"header":' + JSON.stringify(this.get("headerCols"));
+    json += ', "rows": [\n';
+    json += this.rows.map(function(cols, i){
+      return "  " + (i === 0 ? "" : "," ) + JSON.stringify(cols) + "\n";
+    }).join("");
+    json += ']';
+    json += ']}';
+    return json;
   },
 
   toTsv: function(){
