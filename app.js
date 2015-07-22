@@ -60,6 +60,7 @@ var AppM = Backbone.Model.extend({
     input: "",
     rows: [],
     inputType: null, // regexp | mysql | postgresql
+    regexpPattern: "\t",
     headerCols: ""
   },
 
@@ -94,8 +95,9 @@ var AppM = Backbone.Model.extend({
       });
       break;
     default:
+      var re = new RegExp(me.get("regexpPattern"));
       this.rows = _(lines).map(function(line){
-        return line.split(",");
+        return line.split(re);
       });
     }
   },
@@ -201,6 +203,8 @@ var AppV = Backbone.View.extend({
 
     this.model.set("inputType", this.getInputType(),
                    { silent: true });
+    this.model.set("regexpPattern", this.$(".regexp_pattern").val(),
+                   { silent: true });
     this.model.set("headerCols",
                    this.getHeaderCols(),
                    { silent: true });
@@ -212,6 +216,7 @@ var AppV = Backbone.View.extend({
   events: {
     "input .input": "oninput_input",
     "change [name=input_type]": "onchange_inputType",
+    "change .regexp_pattern": "onchange_regexpPattern",
     "input .header_cols": "oninput_headerCols"
   },
 
@@ -235,6 +240,10 @@ var AppV = Backbone.View.extend({
 
   onchange_inputType: function(){
     this.model.set("inputType", this.getInputType());
+  },
+
+  onchange_regexpPattern: function(){
+    this.model.set("regexpPattern", this.$(".regexp_pattern").val());
   },
 
   oninput_headerCols: function(){
