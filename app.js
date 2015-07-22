@@ -221,6 +221,11 @@ var AppV = Backbone.View.extend({
     this.$(".output_tsv").val(this.model.toTsv());
     this.$(".output_gfm_table").html(this.model.toGfmTable());
     this.$(".html_table").html(this.model.toHtmlTable());
+
+    this.$(".regexp_pattern").prop(
+      "disabled",
+      this.model.get("inputType") !== "regexp");
+
     return this;
   },
 
