@@ -212,6 +212,12 @@ var AppV = Backbone.View.extend({
     this.model.set("headerCols",
                    this.getHeaderCols(),
                    { silent: true });
+    this.model.set("chkHeaderCols"
+                   , this.$(".chk_header_cols").prop("checked"),
+                   { silent: true });
+    this.model.set("chkFirstRowHeader"
+                   , this.$(".chk_first_row_header").prop("checked"),
+                   { silent: true });
     this.model.set("input", this.$(".input").val(), { silent: true });
 
     this.render();
@@ -221,7 +227,9 @@ var AppV = Backbone.View.extend({
     "input .input": "oninput_input",
     "change [name=input_type]": "onchange_inputType",
     "change .regexp_pattern": "onchange_regexpPattern",
-    "input .header_cols": "oninput_headerCols"
+    "input .header_cols": "oninput_headerCols",
+    "change .chk_header_cols": "onchange_chkHeaderCols",
+    "change .chk_first_row_header": "onchange_chkFirstRowHeader"
   },
 
   render: function(){
@@ -235,6 +243,10 @@ var AppV = Backbone.View.extend({
       "disabled",
       this.model.get("inputType") !== "regexp");
 
+    this.$(".header_cols").prop(
+      "disabled",
+      ! this.model.get("chkHeaderCols"));
+    
     return this;
   },
 
@@ -252,6 +264,18 @@ var AppV = Backbone.View.extend({
 
   oninput_headerCols: function(){
     this.model.set("headerCols", this.getHeaderCols());
+  },
+
+  onchange_chkHeaderCols: function(){
+    this.model.set(
+      "chkHeaderCols",
+      this.$(".chk_header_cols").prop("checked"));
+  },
+
+  onchange_chkFirstRowHeader: function(){
+    this.model.set(
+      "chkFirstRowHeader",
+      this.$(".chk_first_row_header").prop("checked"));
   },
 
   getInputType: function(){
