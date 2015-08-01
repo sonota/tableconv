@@ -101,13 +101,13 @@ var AppM = Backbone.Model.extend({
       });
     }
 
-    this.bodyRows = this.rows;
+    var bodyRows = this.rows;
 
     var numCols = this.getNumCols(this.rows);
 
     if( this.get("chkFirstRowHeader") ){
       this.headCols = this.rows[0];
-      this.bodyRows = this.rows.slice(1);
+      bodyRows = this.rows.slice(1);
     }else if( this.get("chkCustomHeader") ){
       this.headCols = this.get("customHeader");
     }else{
@@ -115,6 +115,7 @@ var AppM = Backbone.Model.extend({
         return "" + (ci + 1);
       });
     }
+    this.bodyRows = bodyRows;
   },
 
   hasCustomHeader: function(){
