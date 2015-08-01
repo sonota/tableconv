@@ -80,7 +80,7 @@ var AppM = Backbone.Model.extend({
         cols.shift();
         cols.pop();
         return cols.map(strip);
-      });
+      }).value();
       break;
     case "postgresql":
       this.rows = _.chain(lines).filter(function(line){
@@ -92,7 +92,7 @@ var AppM = Backbone.Model.extend({
         cols.shift();
         cols.pop();
         return cols.map(strip);
-      });
+      }).value();
       break;
     default:
       var re = new RegExp(me.get("regexpPattern"));
