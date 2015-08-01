@@ -107,9 +107,28 @@ var AppM = Backbone.Model.extend({
   },
 
   toJson: function(){
-    var json = '{"header":' + JSON.stringify(this.get("headerCols"));
+    var headCols;
+    var bodyRows = this.rows;
+
+    var numCols = 0;
+    _(this.rows).each(function(cols){
+      numCols = Math.max(numCols, cols.length);
+    });
+
+    if( this.get("chkFirstRowHeader") ){
+      headCols = this.rows[0];
+      bodyRows = this.rows.slice(1);
+    }else if( this.get("chkHeaderCols") ){
+      headCols = this.get("headerCols");
+    }else{
+      headCols = _.range(0, numCols).map(function(ci){
+        return "" + (ci + 1);
+      });
+    }
+
+    var json = '{"header":' + JSON.stringify(headCols);
     json += ', "rows": [\n';
-    json += this.rows.map(function(cols, i){
+    json += bodyRows.map(function(cols, i){
       return "  " + (i === 0 ? "" : "," ) + JSON.stringify(cols) + "\n";
     }).join("");
     json += ']';
@@ -118,13 +137,30 @@ var AppM = Backbone.Model.extend({
   },
 
   toTsv: function(){
-    var tsv = "";
-    if(this.hasHeaderCols()){
-      tsv += this.get("headerCols").map(function(col){
-        return JSON.stringify(col); // quote by double quote
-      }).join("\t") + "\n";
+    var headCols;
+    var bodyRows = this.rows;
+
+    var numCols = 0;
+    _(this.rows).each(function(cols){
+      numCols = Math.max(numCols, cols.length);
+    });
+
+    if( this.get("chkFirstRowHeader") ){
+      headCols = this.rows[0];
+      bodyRows = this.rows.slice(1);
+    }else if( this.get("chkHeaderCols") ){
+      headCols = this.get("headerCols");
+    }else{
+      headCols = _.range(0, numCols).map(function(ci){
+        return "" + (ci + 1);
+      });
     }
-    tsv += _(this.rows).map(function(cols){
+
+    var tsv = "";
+    tsv += headCols.map(function(col){
+      return JSON.stringify(col); // quote by double quote
+    }).join("\t") + "\n";
+    tsv += _(bodyRows).map(function(cols){
       return cols.map(function(col){
         return JSON.stringify(col); // quote by double quote
       }).join("\t") + "\n";
@@ -135,13 +171,30 @@ var AppM = Backbone.Model.extend({
   toHtmlTable: function(){
     var h = "";
 
-    if(this.hasHeaderCols()){
-      h += '<tr>' + this.get("headerCols").map(function(col){
-        return '<th>'+col+'</th>';
-      }) + '</tr>';
+    var headCols;
+    var bodyRows = this.rows;
+
+    var numCols = 0;
+    _(this.rows).each(function(cols){
+      numCols = Math.max(numCols, cols.length);
+    });
+
+    if( this.get("chkFirstRowHeader") ){
+      headCols = this.rows[0];
+      bodyRows = this.rows.slice(1);
+    }else if( this.get("chkHeaderCols") ){
+      headCols = this.get("headerCols");
+    }else{
+      headCols = _.range(0, numCols).map(function(ci){
+        return "" + (ci + 1);
+      });
     }
 
-    _(this.rows).each(function(cols){
+    h += '<tr>' + headCols.map(function(col){
+      return '<th>'+col+'</th>';
+    }) + '</tr>';
+
+    _(bodyRows).each(function(cols){
       h += '<tr>';
       _(cols).each(function(col){
         h += '<td>' + escapeHtml(col) + '</td>';
@@ -170,7 +223,11 @@ var AppM = Backbone.Model.extend({
     var s = "";
 
     var headCols;
-    if(this.hasHeaderCols()){
+    var bodyRows = this.rows;
+    if( this.get("chkFirstRowHeader") ){
+      headCols = this.rows[0];
+      bodyRows = this.rows.slice(1);
+    }else if( this.get("chkHeaderCols") ){
       headCols = this.get("headerCols");
     }else{
       headCols = _.range(0, numCols).map(function(ci){
@@ -189,7 +246,7 @@ var AppM = Backbone.Model.extend({
     });
     s += "\n";
 
-    s += _(this.rows).map(function(cols){
+    s += _(bodyRows).map(function(cols){
       var line = "|";
       _(cols).each(function(col, ci){
         line += " " + padLeft(col, maxlens[ci]) + " |";
