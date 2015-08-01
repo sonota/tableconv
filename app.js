@@ -174,7 +174,7 @@ var AppM = Backbone.Model.extend({
       headCols = this.get("headerCols");
     }else{
       headCols = _.range(0, numCols).map(function(ci){
-        return ci + 1;
+        return "" + (ci + 1);
       });
     }
     s += "|";
