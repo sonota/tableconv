@@ -106,14 +106,19 @@ var AppM = Backbone.Model.extend({
     return this.get("headerCols").length > 0;
   },
 
+  getNumCols: function(rows){
+    var numCols = 0;
+    _(rows).each(function(cols){
+      numCols = Math.max(numCols, cols.length);
+    });
+    return numCols;
+  },
+
   toJson: function(){
     var headCols;
     var bodyRows = this.rows;
 
-    var numCols = 0;
-    _(this.rows).each(function(cols){
-      numCols = Math.max(numCols, cols.length);
-    });
+    var numCols = this.getNumCols(this.rows);
 
     if( this.get("chkFirstRowHeader") ){
       headCols = this.rows[0];
@@ -140,10 +145,7 @@ var AppM = Backbone.Model.extend({
     var headCols;
     var bodyRows = this.rows;
 
-    var numCols = 0;
-    _(this.rows).each(function(cols){
-      numCols = Math.max(numCols, cols.length);
-    });
+    var numCols = this.getNumCols(this.rows);
 
     if( this.get("chkFirstRowHeader") ){
       headCols = this.rows[0];
@@ -174,10 +176,7 @@ var AppM = Backbone.Model.extend({
     var headCols;
     var bodyRows = this.rows;
 
-    var numCols = 0;
-    _(this.rows).each(function(cols){
-      numCols = Math.max(numCols, cols.length);
-    });
+    var numCols = this.getNumCols(this.rows);
 
     if( this.get("chkFirstRowHeader") ){
       headCols = this.rows[0];
@@ -205,10 +204,7 @@ var AppM = Backbone.Model.extend({
   },
 
   toGfmTable: function(){
-    var numCols = 0;
-    _(this.rows).each(function(cols){
-      numCols = Math.max(numCols, cols.length);
-    });
+    var numCols = this.getNumCols(this.rows);
 
     var maxlens = [];
     _(this.rows).each(function(cols){
