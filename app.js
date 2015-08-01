@@ -140,6 +140,22 @@ var AppM = Backbone.Model.extend({
     return json;
   },
 
+  toJsonObject: function(){
+    var me = this;
+    var json = '{"header":' + JSON.stringify(this.headCols);
+    json += ', "rows": [\n';
+    json += this.bodyRows.map(function(cols, i){
+      var obj = {};
+      _(cols).each(function(col, ci){
+        obj[me.headCols[ci]] = col;
+      });
+      return "  " + (i === 0 ? "" : "," ) + JSON.stringify(obj) + "\n";
+    }).join("");
+    json += ']';
+    json += ']}';
+    return json;
+  },
+
   toTsv: function(){
     var tsv = "";
     tsv += this.headCols.map(function(col){
@@ -242,6 +258,7 @@ var AppV = Backbone.View.extend({
   render: function(){
     this.model.parse();
     this.$(".output_json").val(this.model.toJson());
+    this.$(".output_json_object").val(this.model.toJsonObject());
     this.$(".output_tsv").val(this.model.toTsv());
     this.$(".output_gfm_table").html(this.model.toGfmTable());
     this.$(".html_table").html(this.model.toHtmlTable());
