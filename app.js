@@ -115,25 +115,24 @@ var AppM = Backbone.Model.extend({
   },
 
   toJson: function(){
-    var headCols;
-    var bodyRows = this.rows;
+    this.bodyRows = this.rows;
 
     var numCols = this.getNumCols(this.rows);
 
     if( this.get("chkFirstRowHeader") ){
-      headCols = this.rows[0];
-      bodyRows = this.rows.slice(1);
+      this.headCols = this.rows[0];
+      this.bodyRows = this.rows.slice(1);
     }else if( this.get("chkHeaderCols") ){
-      headCols = this.get("headerCols");
+      this.headCols = this.get("headerCols");
     }else{
-      headCols = _.range(0, numCols).map(function(ci){
+      this.headCols = _.range(0, numCols).map(function(ci){
         return "" + (ci + 1);
       });
     }
 
-    var json = '{"header":' + JSON.stringify(headCols);
+    var json = '{"header":' + JSON.stringify(this.headCols);
     json += ', "rows": [\n';
-    json += bodyRows.map(function(cols, i){
+    json += this.bodyRows.map(function(cols, i){
       return "  " + (i === 0 ? "" : "," ) + JSON.stringify(cols) + "\n";
     }).join("");
     json += ']';
@@ -142,27 +141,26 @@ var AppM = Backbone.Model.extend({
   },
 
   toTsv: function(){
-    var headCols;
-    var bodyRows = this.rows;
+    this.bodyRows = this.rows;
 
     var numCols = this.getNumCols(this.rows);
 
     if( this.get("chkFirstRowHeader") ){
-      headCols = this.rows[0];
-      bodyRows = this.rows.slice(1);
+      this.headCols = this.rows[0];
+      this.bodyRows = this.rows.slice(1);
     }else if( this.get("chkHeaderCols") ){
-      headCols = this.get("headerCols");
+      this.headCols = this.get("headerCols");
     }else{
-      headCols = _.range(0, numCols).map(function(ci){
+      this.headCols = _.range(0, numCols).map(function(ci){
         return "" + (ci + 1);
       });
     }
 
     var tsv = "";
-    tsv += headCols.map(function(col){
+    tsv += this.headCols.map(function(col){
       return JSON.stringify(col); // quote by double quote
     }).join("\t") + "\n";
-    tsv += _(bodyRows).map(function(cols){
+    tsv += _(this.bodyRows).map(function(cols){
       return cols.map(function(col){
         return JSON.stringify(col); // quote by double quote
       }).join("\t") + "\n";
@@ -173,27 +171,26 @@ var AppM = Backbone.Model.extend({
   toHtmlTable: function(){
     var h = "";
 
-    var headCols;
-    var bodyRows = this.rows;
+    this.bodyRows = this.rows;
 
     var numCols = this.getNumCols(this.rows);
 
     if( this.get("chkFirstRowHeader") ){
-      headCols = this.rows[0];
-      bodyRows = this.rows.slice(1);
+      this.headCols = this.rows[0];
+      this.bodyRows = this.rows.slice(1);
     }else if( this.get("chkHeaderCols") ){
-      headCols = this.get("headerCols");
+      this.headCols = this.get("headerCols");
     }else{
-      headCols = _.range(0, numCols).map(function(ci){
+      this.headCols = _.range(0, numCols).map(function(ci){
         return "" + (ci + 1);
       });
     }
 
-    h += '<tr>' + headCols.map(function(col){
+    h += '<tr>' + this.headCols.map(function(col){
       return '<th>'+col+'</th>';
     }) + '</tr>';
 
-    _(bodyRows).each(function(cols){
+    _(this.bodyRows).each(function(cols){
       h += '<tr>';
       _(cols).each(function(col){
         h += '<td>' + escapeHtml(col) + '</td>';
@@ -218,20 +215,19 @@ var AppM = Backbone.Model.extend({
 
     var s = "";
 
-    var headCols;
-    var bodyRows = this.rows;
+    this.bodyRows = this.rows;
     if( this.get("chkFirstRowHeader") ){
-      headCols = this.rows[0];
-      bodyRows = this.rows.slice(1);
+      this.headCols = this.rows[0];
+      this.bodyRows = this.rows.slice(1);
     }else if( this.get("chkHeaderCols") ){
-      headCols = this.get("headerCols");
+      this.headCols = this.get("headerCols");
     }else{
-      headCols = _.range(0, numCols).map(function(ci){
+      this.headCols = _.range(0, numCols).map(function(ci){
         return "" + (ci + 1);
       });
     }
     s += "|";
-    _(headCols).each(function(col, ci){
+    _(this.headCols).each(function(col, ci){
       s += " " + padLeft(col, maxlens[ci]) + " |";
     });
     s += "\n";
@@ -242,7 +238,7 @@ var AppM = Backbone.Model.extend({
     });
     s += "\n";
 
-    s += _(bodyRows).map(function(cols){
+    s += _(this.bodyRows).map(function(cols){
       var line = "|";
       _(cols).each(function(col, ci){
         line += " " + padLeft(col, maxlens[ci]) + " |";
