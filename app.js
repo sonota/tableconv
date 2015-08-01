@@ -61,7 +61,7 @@ var AppM = Backbone.Model.extend({
     rows: [],
     inputType: null, // regexp | mysql | postgresql
     regexpPattern: "\t",
-    headerCols: ""
+    customHeader: ""
   },
 
   parse: function(){
@@ -108,8 +108,8 @@ var AppM = Backbone.Model.extend({
     if( this.get("chkFirstRowHeader") ){
       this.headCols = this.rows[0];
       this.bodyRows = this.rows.slice(1);
-    }else if( this.get("chkHeaderCols") ){
-      this.headCols = this.get("headerCols");
+    }else if( this.get("chkCustomHeader") ){
+      this.headCols = this.get("customHeader");
     }else{
       this.headCols = _.range(0, numCols).map(function(ci){
         return "" + (ci + 1);
@@ -117,8 +117,8 @@ var AppM = Backbone.Model.extend({
     }
   },
 
-  hasHeaderCols: function(){
-    return this.get("headerCols").length > 0;
+  hasCustomHeader: function(){
+    return this.get("customHeader").length > 0;
   },
 
   getNumCols: function(rows){
@@ -232,11 +232,11 @@ var AppV = Backbone.View.extend({
                    { silent: true });
     this.model.set("regexpPattern", this.$(".regexp_pattern").val(),
                    { silent: true });
-    this.model.set("headerCols",
-                   this.getHeaderCols(),
+    this.model.set("customHeader",
+                   this.getCustomHeader(),
                    { silent: true });
-    this.model.set("chkHeaderCols"
-                   , this.$(".chk_header_cols").prop("checked"),
+    this.model.set("chkCustomHeader"
+                   , this.$(".chk_custom_header").prop("checked"),
                    { silent: true });
     this.model.set("chkFirstRowHeader"
                    , this.$(".chk_first_row_header").prop("checked"),
@@ -250,8 +250,8 @@ var AppV = Backbone.View.extend({
     "input .input": "oninput_input",
     "change [name=input_type]": "onchange_inputType",
     "change .regexp_pattern": "onchange_regexpPattern",
-    "input .header_cols": "oninput_headerCols",
-    "change .chk_header_cols": "onchange_chkHeaderCols",
+    "input .custom_header": "oninput_customHeader",
+    "change .chk_custom_header": "onchange_chkCustomHeader",
     "change .chk_first_row_header": "onchange_chkFirstRowHeader"
   },
 
@@ -267,9 +267,9 @@ var AppV = Backbone.View.extend({
       "disabled",
       this.model.get("inputType") !== "regexp");
 
-    this.$(".header_cols").prop(
+    this.$(".custom_header").prop(
       "disabled",
-      ! this.model.get("chkHeaderCols"));
+      ! this.model.get("chkCustomHeader"));
     
     return this;
   },
@@ -286,14 +286,14 @@ var AppV = Backbone.View.extend({
     this.model.set("regexpPattern", this.$(".regexp_pattern").val());
   },
 
-  oninput_headerCols: function(){
-    this.model.set("headerCols", this.getHeaderCols());
+  oninput_customHeader: function(){
+    this.model.set("customHeader", this.getCustomHeader());
   },
 
-  onchange_chkHeaderCols: function(){
+  onchange_chkCustomHeader: function(){
     this.model.set(
-      "chkHeaderCols",
-      this.$(".chk_header_cols").prop("checked"));
+      "chkCustomHeader",
+      this.$(".chk_custom_header").prop("checked"));
   },
 
   onchange_chkFirstRowHeader: function(){
@@ -306,8 +306,8 @@ var AppV = Backbone.View.extend({
     return this.$("[name=input_type]:checked").val();
   },
 
-  getHeaderCols: function(){
-    return this.$(".header_cols").val().split(",").map(strip);
+  getCustomHeader: function(){
+    return this.$(".custom_header").val().split(",").map(strip);
   }
 });
 
