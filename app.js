@@ -227,7 +227,7 @@ var AppM = Backbone.Model.extend({
 
 var AppV = Backbone.View.extend({
   initialize: function(){
-    this.listenTo(this.model, "change", this.render);
+    this.listenTo(this.model, "change", _.debounce(this.render, 200));
 
     this.model.set("inputType", this.getInputType(),
                    { silent: true });
