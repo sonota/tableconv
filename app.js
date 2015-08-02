@@ -193,24 +193,25 @@ var AppM = Backbone.Model.extend({
   toHtmlTable: function(){
     var h = "";
 
-    h += '<tr>' + this.headColsNumber.map(function(col){
+    h += '<tr><th>#</th>' + this.headColsNumber.map(function(col){
       return '<th>'+col+'</th>';
     }) + '</tr>';
 
     if( this.get("chkCustomHeader") ){
-      h += '<tr>' + this.headColsCustom.map(function(col){
+      h += '<tr><th>custom</th>' + this.headColsCustom.map(function(col){
         return '<th>'+col+'</th>';
       }) + '</tr>';
     }
 
     if( this.get("chkFirstRowHeader") ){
-      h += '<tr>' + this.headCols.map(function(col){
+      h += '<tr><th>1st row</th>' + this.headCols.map(function(col){
         return '<th>'+col+'</th>';
       }) + '</tr>';
     }
 
-    _(this.bodyRows).each(function(cols){
+    _(this.bodyRows).each(function(cols, ri){
       h += '<tr>';
+      h += '<th>' + (ri + 1) + '</th>';
       _(cols).each(function(col){
         h += '<td>' + escapeHtml(col) + '</td>';
       });
