@@ -61,6 +61,7 @@ var AppM = Backbone.Model.extend({
     rows: [],
     inputType: null, // regexp | mysql | postgresql
     regexpPattern: "\t",
+    chkColNumber: false,
     customHeader: ""
   },
 
@@ -102,18 +103,20 @@ var AppM = Backbone.Model.extend({
     }
 
     var bodyRows = this.rows;
-
     var numCols = this.getNumCols(this.rows);
+
+    this.headColsNumber = _.range(0, numCols).map(function(ci){
+      return "" + (ci + 1);
+    });
+    this.headCols = null;
+    this.headColsCustom = null;
 
     if( this.get("chkFirstRowHeader") ){
       this.headCols = this.rows[0];
       bodyRows = this.rows.slice(1);
-    }else if( this.get("chkCustomHeader") ){
-      this.headCols = this.get("customHeader");
-    }else{
-      this.headCols = _.range(0, numCols).map(function(ci){
-        return "" + (ci + 1);
-      });
+    }
+    if( this.get("chkCustomHeader") ){
+      this.headColsCustom = this.get("customHeader");
     }
     this.bodyRows = bodyRows;
   },
@@ -131,7 +134,8 @@ var AppM = Backbone.Model.extend({
   },
 
   toJsonArray: function(){
-    var json = '{"header":' + JSON.stringify(this.headCols);
+    var headCols = this.headColsCustom || this.headCols || this.headColsNumber;
+    var json = '{"header":' + JSON.stringify(headCols);
     json += ', "rows": [\n';
     json += this.bodyRows.map(function(cols, i){
       return "  " + (i === 0 ? "" : "," ) + JSON.stringify(cols) + "\n";
@@ -142,13 +146,13 @@ var AppM = Backbone.Model.extend({
   },
 
   toJsonObject: function(){
-    var me = this;
-    var json = '{"header":' + JSON.stringify(this.headCols);
+    var headCols = this.headColsCustom || this.headCols || this.headColsNumber;
+    var json = '{"header":' + JSON.stringify(headCols);
     json += ', "rows": [\n';
     json += this.bodyRows.map(function(cols, i){
       var obj = {};
       _(cols).each(function(col, ci){
-        obj[me.headCols[ci]] = col;
+        obj[headCols[ci]] = col;
       });
       return "  " + (i === 0 ? "" : "," ) + JSON.stringify(obj) + "\n";
     }).join("");
@@ -159,9 +163,25 @@ var AppM = Backbone.Model.extend({
 
   toTsv: function(){
     var tsv = "";
-    tsv += this.headCols.map(function(col){
-      return JSON.stringify(col); // quote by double quote
-    }).join("\t") + "\n";
+
+    if( this.get("chkColNumber") ){
+      tsv += this.headColsNumber.map(function(col){
+        return JSON.stringify(col); // quote by double quote
+      }).join("\t") + "\n";
+    }
+
+    if( this.get("chkCustomHeader") ){
+      tsv += this.headColsCustom.map(function(col){
+        return JSON.stringify(col); // quote by double quote
+      }).join("\t") + "\n";
+    }
+
+    if( this.get("chkFirstRowHeader") ){
+      tsv += this.headCols.map(function(col){
+        return JSON.stringify(col); // quote by double quote
+      }).join("\t") + "\n";
+    }
+
     tsv += _(this.bodyRows).map(function(cols){
       return cols.map(function(col){
         return JSON.stringify(col); // quote by double quote
@@ -173,9 +193,21 @@ var AppM = Backbone.Model.extend({
   toHtmlTable: function(){
     var h = "";
 
-    h += '<tr>' + this.headCols.map(function(col){
+    h += '<tr>' + this.headColsNumber.map(function(col){
       return '<th>'+col+'</th>';
     }) + '</tr>';
+
+    if( this.get("chkCustomHeader") ){
+      h += '<tr>' + this.headColsCustom.map(function(col){
+        return '<th>'+col+'</th>';
+      }) + '</tr>';
+    }
+
+    if( this.get("chkFirstRowHeader") ){
+      h += '<tr>' + this.headCols.map(function(col){
+        return '<th>'+col+'</th>';
+      }) + '</tr>';
+    }
 
     _(this.bodyRows).each(function(cols){
       h += '<tr>';
@@ -189,6 +221,7 @@ var AppM = Backbone.Model.extend({
 
   toGfmTable: function(){
     var numCols = this.getNumCols(this.rows);
+    var headCols = this.headColsCustom || this.headCols || this.headColsNumber;
 
     var maxlens = [];
     _(this.rows).each(function(cols){
@@ -202,7 +235,7 @@ var AppM = Backbone.Model.extend({
 
     var s = "";
     s += "|";
-    _(this.headCols).each(function(col, ci){
+    _(headCols).each(function(col, ci){
       s += " " + padLeft(col, maxlens[ci]) + " |";
     });
     s += "\n";
@@ -233,6 +266,9 @@ var AppV = Backbone.View.extend({
                    { silent: true });
     this.model.set("regexpPattern", this.$(".regexp_pattern").val(),
                    { silent: true });
+    this.model.set("chkColNumber"
+                   , this.$(".chk_col_number").prop("checked"),
+                   { silent: true });
     this.model.set("customHeader",
                    this.getCustomHeader(),
                    { silent: true });
@@ -251,6 +287,7 @@ var AppV = Backbone.View.extend({
     "input .input": "oninput_input",
     "change [name=input_type]": "onchange_inputType",
     "change .regexp_pattern": "onchange_regexpPattern",
+    "change .chk_col_number": "onchange_chkColNumber",
     "input .custom_header": "oninput_customHeader",
     "change .chk_custom_header": "onchange_chkCustomHeader",
     "change .chk_first_row_header": "onchange_chkFirstRowHeader"
@@ -293,6 +330,10 @@ var AppV = Backbone.View.extend({
 
   onchange_regexpPattern: function(){
     this.model.set("regexpPattern", this.$(".regexp_pattern").val());
+  },
+
+  onchange_chkColNumber: function(){
+    this.model.set("chkColNumber", this.$(".chk_col_number").prop("checked"));
   },
 
   oninput_customHeader: function(){
