@@ -257,6 +257,10 @@ var AppV = Backbone.View.extend({
   },
 
   render: function(){
+    var me = this;
+
+    this.$(".processing_indicator").show();
+
     this.model.parse();
     this.$(".output_json_array").val(this.model.toJsonArray());
     this.$(".output_json_object").val(this.model.toJsonObject());
@@ -271,7 +275,11 @@ var AppV = Backbone.View.extend({
     this.$(".custom_header").prop(
       "disabled",
       ! this.model.get("chkCustomHeader"));
-    
+
+    setTimeout(function(){
+      me.$(".processing_indicator").hide();
+    }, 500);
+
     return this;
   },
 
