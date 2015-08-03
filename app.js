@@ -47,6 +47,15 @@ function padLeft(s, n){
   return ret;
 }
 
+function padRight(s, n){
+  var pad = n - strlen(s);
+  var ret = s;
+  for(var i=0; i<pad; i++){
+    ret = " " + ret;
+  }
+  return ret;
+}
+
 function mkstr(s, n){
   var ret = "";
   for(var i=0; i<n; i++){
@@ -250,7 +259,13 @@ var AppM = Backbone.Model.extend({
     s += _(this.bodyRows).map(function(cols){
       var line = "|";
       _(cols).each(function(col, ci){
-        line += " " + padLeft(col, maxlens[ci]) + " |";
+        line += " ";
+        if( col.match(/^-?[\d,]+$/) ){
+          line += padRight(col, maxlens[ci]);
+        }else{
+          line += padLeft(col, maxlens[ci]);
+        }
+        line += " |";
       });
       return line += "\n";
     }).join("");
