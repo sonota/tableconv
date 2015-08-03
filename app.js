@@ -40,20 +40,12 @@ function strlen(s){
 
 function padLeft(s, n){
   var pad = n - strlen(s);
-  var ret = s;
-  for(var i=0; i<pad; i++){
-    ret = ret + " ";
-  }
-  return ret;
+  return s + mkstr(" ", pad);
 }
 
 function padRight(s, n){
   var pad = n - strlen(s);
-  var ret = s;
-  for(var i=0; i<pad; i++){
-    ret = " " + ret;
-  }
-  return ret;
+  return mkstr(" ", pad) + s;
 }
 
 function mkstr(s, n){
