@@ -146,7 +146,7 @@ var AppM = Backbone.Model.extend({
       return "  " + (i === 0 ? "" : "," ) + JSON.stringify(cols) + "\n";
     }).join("");
     json += ']';
-    json += ']}';
+    json += '}';
     return json;
   },
 
@@ -162,7 +162,7 @@ var AppM = Backbone.Model.extend({
       return "  " + (i === 0 ? "" : "," ) + JSON.stringify(obj) + "\n";
     }).join("");
     json += ']';
-    json += ']}';
+    json += '}';
     return json;
   },
 
