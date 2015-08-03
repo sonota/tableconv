@@ -56,6 +56,10 @@ function padRight(s, n){
   return mkstr(" ", pad) + s;
 }
 
+function isNumber(s){
+  return /^-?[\d,]+$/.test(s);
+}
+
 var AppM = Backbone.Model.extend({
   defaults: {
     input: "",
@@ -255,7 +259,7 @@ var AppM = Backbone.Model.extend({
       var line = "|";
       _(cols).each(function(col, ci){
         line += " ";
-        if( col.match(/^-?[\d,]+$/) ){
+        if( isNumber(col) ){
           line += padRight(col, maxlens[ci]);
         }else{
           line += padLeft(col, maxlens[ci]);
