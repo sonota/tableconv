@@ -287,7 +287,7 @@ var AppV = Backbone.View.extend({
   events: {
     "input .input": "oninput_input",
     "change [name=input_type]": "onchange_inputType",
-    "change .regexp_pattern": "onchange_regexpPattern",
+    "input .regexp_pattern": "oninput_regexpPattern",
     "change .chk_col_number": "onchange_chkColNumber",
     "input .custom_header": "oninput_customHeader",
     "change .chk_custom_header": "onchange_chkCustomHeader",
@@ -329,7 +329,7 @@ var AppV = Backbone.View.extend({
     this.model.set("inputType", this.getInputType());
   },
 
-  onchange_regexpPattern: function(){
+  oninput_regexpPattern: function(){
     this.model.set("regexpPattern", this.$(".regexp_pattern").val());
   },
 
