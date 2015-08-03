@@ -42,7 +42,7 @@ function padLeft(s, n){
   var pad = n - strlen(s);
   var ret = s;
   for(var i=0; i<pad; i++){
-    ret = ret += " ";
+    ret = ret + " ";
   }
   return ret;
 }
