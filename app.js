@@ -226,6 +226,9 @@ var AppM = Backbone.Model.extend({
     var headCols = this.headColsCustom || this.headCols || this.headColsNumber;
 
     var maxlens = [];
+    _(headCols).each(function(col, ci){
+      maxlens[ci] = Math.max(maxlens[ci] || 0, strlen(col));
+    });
     _(this.rows).each(function(cols){
       _(cols).each(function(col, ci){
         maxlens[ci] = Math.max(maxlens[ci] || 0, strlen(col));
