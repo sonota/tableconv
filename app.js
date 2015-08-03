@@ -38,6 +38,14 @@ function strlen(s){
   }
 }
 
+function mkstr(s, n){
+  var ret = "";
+  for(var i=0; i<n; i++){
+    ret += s;
+  }
+  return ret;
+}
+
 function padLeft(s, n){
   var pad = n - strlen(s);
   return s + mkstr(" ", pad);
@@ -46,14 +54,6 @@ function padLeft(s, n){
 function padRight(s, n){
   var pad = n - strlen(s);
   return mkstr(" ", pad) + s;
-}
-
-function mkstr(s, n){
-  var ret = "";
-  for(var i=0; i<n; i++){
-    ret += s;
-  }
-  return ret;
 }
 
 var AppM = Backbone.Model.extend({
