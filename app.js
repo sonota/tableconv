@@ -218,7 +218,12 @@ var AppM = Backbone.Model.extend({
       h += '<tr>';
       h += '<th>' + (ri + 1) + '</th>';
       _(cols).each(function(col){
-        h += '<td>' + escapeHtml(col) + '</td>';
+        if( isNumber(col) ){
+          h += '<td class="right">';
+        }else{
+          h += '<td>';
+        }
+        h += escapeHtml(col) + '</td>';
       });
       h += '</tr>';
     });
