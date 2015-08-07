@@ -60,6 +60,42 @@ function isNumber(s){
   return /^-?[\d,]+$/.test(s);
 }
 
+function parse_regexp(text, options){
+  var lines = text.split("\n");
+  var re = options.re;
+  return _(lines).map(function(line){
+    return line.split(re);
+  });
+}
+
+function parse_mysql(text){
+  var lines = text.split("\n");
+  return _.chain(lines).filter(function(line){
+    return ! ( /^\+/.test(line)
+               || /^\s*$/.test(line)
+             );
+  }).map(function(line){
+    var cols = (" " + line + " ").split(" | ");
+    cols.shift();
+    cols.pop();
+    return cols.map(strip);
+  }).value();
+}
+
+function parse_postgresql(text){
+  var lines = text.split("\n");
+  return _.chain(lines).filter(function(line){
+    return ! ( /^\-/.test(line)
+               || /^\s*$/.test(line)
+             );
+  }).map(function(line){
+    var cols = (" |" + line + " | ").split(" | ");
+    cols.shift();
+    cols.pop();
+    return cols.map(strip);
+  }).value();
+}
+
 var AppM = Backbone.Model.extend({
   defaults: {
     input: "",
@@ -73,38 +109,17 @@ var AppM = Backbone.Model.extend({
   parse: function(){
     var me = this;
     var text = this.get("input");
-    var lines = text.split("\n");
 
     switch(this.get("inputType")){
     case "mysql":
-      this.rows = _.chain(lines).filter(function(line){
-        return ! ( /^\+/.test(line)
-                   || /^\s*$/.test(line)
-                 );
-      }).map(function(line){
-        var cols = (" " + line + " ").split(" | ");
-        cols.shift();
-        cols.pop();
-        return cols.map(strip);
-      }).value();
+      this.rows = parse_mysql(text);
       break;
     case "postgresql":
-      this.rows = _.chain(lines).filter(function(line){
-        return ! ( /^\-/.test(line)
-                  || /^\s*$/.test(line)
-                 );
-      }).map(function(line){
-        var cols = (" |" + line + " | ").split(" | ");
-        cols.shift();
-        cols.pop();
-        return cols.map(strip);
-      }).value();
+      this.rows = parse_postgresql(text);
       break;
     default:
       var re = new RegExp(me.get("regexpPattern"));
-      this.rows = _(lines).map(function(line){
-        return line.split(re);
-      });
+      this.rows = parse_regexp(text, { re: re });
     }
 
     var bodyRows = this.rows;
