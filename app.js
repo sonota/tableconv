@@ -141,10 +141,6 @@ var AppM = Backbone.Model.extend({
     this.bodyRows = bodyRows;
   },
 
-  hasCustomHeader: function(){
-    return this.get("customHeader").length > 0;
-  },
-
   getNumCols: function(rows){
     var numCols = 0;
     _(rows).each(function(cols){
