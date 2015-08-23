@@ -1,5 +1,5 @@
 {
-  "name": "xsvconv",
+  "name": "tableconv",
   "version": "0.0.0",
   "ignore": [
     "**/.*",
