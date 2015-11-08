@@ -96,11 +96,25 @@ function parse_postgresql(text){
   }).value();
 }
 
+function parse_gfm_table(text){
+  var lines = text.split("\n");
+  return _.chain(lines).filter(function(line){
+    return ! ( /^\| ----/.test(line)
+               || /^\s*$/.test(line)
+             );
+  }).map(function(line){
+    var cols = (" " + line + " ").split(" | ");
+    cols.shift();
+    cols.pop();
+    return cols.map(strip);
+  }).value();
+}
+
 var AppM = Backbone.Model.extend({
   defaults: {
     input: "",
     rows: [],
-    inputType: null, // regexp | mysql | postgresql
+    inputType: null, // regexp | mysql | postgresql | gfm_table
     regexpPattern: "\t",
     chkColNumber: false,
     customHeader: ""
@@ -116,6 +130,9 @@ var AppM = Backbone.Model.extend({
       break;
     case "postgresql":
       this.rows = parse_postgresql(text);
+      break;
+    case "gfm_table":
+      this.rows = parse_gfm_table(text);
       break;
     default:
       var re = new RegExp(me.get("regexpPattern"));
