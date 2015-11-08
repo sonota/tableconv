@@ -310,23 +310,18 @@ var AppV = Backbone.View.extend({
   initialize: function(){
     this.listenTo(this.model, "change", _.debounce(this.render, 200));
 
-    this.model.set("inputType", this.getInputType(),
-                   { silent: true });
-    this.model.set("regexpPattern", this.$(".regexp_pattern").val(),
-                   { silent: true });
-    this.model.set("chkColNumber"
-                   , this.$(".chk_col_number").prop("checked"),
-                   { silent: true });
-    this.model.set("customHeader",
-                   this.getCustomHeader(),
-                   { silent: true });
-    this.model.set("chkCustomHeader"
-                   , this.$(".chk_custom_header").prop("checked"),
-                   { silent: true });
-    this.model.set("chkFirstRowHeader"
-                   , this.$(".chk_first_row_header").prop("checked"),
-                   { silent: true });
-    this.model.set("input", this.$(".input").val(), { silent: true });
+    this.model.set(
+      {
+        "inputType": this.getInputType(),
+        "regexpPattern": this.$(".regexp_pattern").val(),
+        "chkColNumber": this.$(".chk_col_number").prop("checked"),
+        "customHeader": this.getCustomHeader(),
+        "chkCustomHeader": this.$(".chk_custom_header").prop("checked"),
+        "chkFirstRowHeader": this.$(".chk_first_row_header").prop("checked"),
+        "input": this.$(".input").val()
+      },
+      { silent: true }
+    );
 
     this.render();
   },
