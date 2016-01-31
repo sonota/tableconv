@@ -381,6 +381,12 @@ var AppV = Backbone.View.extend({
       "disabled",
       ! this.model.get("chkCustomHeader"));
 
+    this.$(".col_content_length_max").prop(
+      "disabled",
+      ! this.model.get("chkSnipLongCol"));
+
+    this.$(".col_content_length_max").val(this.model.get("colContentLengthMax"));
+
     setTimeout(function(){
       me.$(".processing_indicator").hide();
     }, 500);
