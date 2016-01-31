@@ -1,4 +1,5 @@
 var SNIP_STR = "...";
+var COL_CONTENT_LENGTH_MAX_DEFAULT = 32;
 
 function puts(){
   console.log.apply(console, arguments);
@@ -121,7 +122,7 @@ var AppM = Backbone.Model.extend({
     chkColNumber: false,
     customHeader: "",
     chkSnipLongCol: false,
-    colContentLengthMax: 32
+    colContentLengthMax: COL_CONTENT_LENGTH_MAX_DEFAULT
   },
 
   parse: function(){
@@ -450,7 +451,7 @@ var AppV = Backbone.View.extend({
   getColContentLengthMax: function(){
     var n = parseInt(this.$(".col_content_length_max").val(), 10);
     if(isNaN(n)){
-      return 32;
+      return COL_CONTENT_LENGTH_MAX_DEFAULT;
     }
     if(n < SNIP_STR.length + 2){
       return SNIP_STR.length + 2;
