@@ -1,3 +1,5 @@
+var SNIP_STR = "...";
+
 function puts(){
   console.log.apply(console, arguments);
 }
@@ -225,7 +227,24 @@ var AppM = Backbone.Model.extend({
     return tsv;
   },
 
+  _colContentToHtml: function(content){
+    var max = this.get("colContentLengthMax");
+    if( this.get("chkSnipLongCol")
+        && content.length > max
+      ){
+      var half = Math.floor( (max - SNIP_STR.length) / 2 );
+      var head = content.substring(0, half);
+      var tail = content.substring(content.length - half, content.length);
+      return escapeHtml(head)
+          + '<span class="col_snip">' + SNIP_STR + '</span>'
+          + escapeHtml(tail);
+    }else{
+      return escapeHtml(content);
+    }
+  },
+
   toHtmlTable: function(){
+    var me = this;
     var h = "";
 
     h += '<tr><th>#</th>' + this.headColsNumber.map(function(col){
@@ -253,7 +272,7 @@ var AppM = Backbone.Model.extend({
         }else{
           h += '<td>';
         }
-        h += escapeHtml(col) + '</td>';
+        h += me._colContentToHtml(col) + '</td>';
       });
       h += '</tr>';
     });
