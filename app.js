@@ -341,7 +341,7 @@ var AppV = Backbone.View.extend({
         "chkFirstRowHeader": this.$(".chk_first_row_header").prop("checked"),
         "input": this.$(".input").val(),
         "chkSnipLongCol": this.$(".chk_snip_long_col").prop("checked"),
-        "colContentLengthMax": parseInt(this.$(".col_content_length_max").val(), 10)
+        "colContentLengthMax": this.getColContentLengthMax()
       },
       { silent: true }
     );
@@ -435,7 +435,8 @@ var AppV = Backbone.View.extend({
   onchange_colContentLengthMax: function(){
     this.model.set(
       "colContentLengthMax",
-      parseInt(this.$(".col_content_length_max").val(), 10));
+      this.getColContentLengthMax());
+    this.model.trigger("change:colContentLengthMax");
   },
 
   getInputType: function(){
@@ -444,6 +445,17 @@ var AppV = Backbone.View.extend({
 
   getCustomHeader: function(){
     return this.$(".custom_header").val().split(",").map(strip);
+  },
+
+  getColContentLengthMax: function(){
+    var n = parseInt(this.$(".col_content_length_max").val(), 10);
+    if(isNaN(n)){
+      return 32;
+    }
+    if(n < SNIP_STR.length + 2){
+      return SNIP_STR.length + 2;
+    }
+    return n;
   }
 });
 
