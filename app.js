@@ -339,7 +339,9 @@ var AppV = Backbone.View.extend({
         "customHeader": this.getCustomHeader(),
         "chkCustomHeader": this.$(".chk_custom_header").prop("checked"),
         "chkFirstRowHeader": this.$(".chk_first_row_header").prop("checked"),
-        "input": this.$(".input").val()
+        "input": this.$(".input").val(),
+        "chkSnipLongCol": this.$(".chk_snip_long_col").prop("checked"),
+        "colContentLengthMax": parseInt(this.$(".col_content_length_max").val(), 10)
       },
       { silent: true }
     );
