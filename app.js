@@ -117,7 +117,9 @@ var AppM = Backbone.Model.extend({
     inputType: null, // regexp | mysql | postgresql | gfm_table
     regexpPattern: "\t",
     chkColNumber: false,
-    customHeader: ""
+    customHeader: "",
+    chkSnipLongCol: false,
+    colContentLengthMax: 32
   },
 
   parse: function(){
@@ -333,7 +335,9 @@ var AppV = Backbone.View.extend({
     "change .chk_col_number": "onchange_chkColNumber",
     "input .custom_header": "oninput_customHeader",
     "change .chk_custom_header": "onchange_chkCustomHeader",
-    "change .chk_first_row_header": "onchange_chkFirstRowHeader"
+    "change .chk_first_row_header": "onchange_chkFirstRowHeader",
+    "change .chk_snip_long_col": "onchange_chkSnipLongCol",
+    "change .col_content_length_max": "onchange_colContentLengthMax"
   },
 
   render: function(){
@@ -393,6 +397,18 @@ var AppV = Backbone.View.extend({
     this.model.set(
       "chkFirstRowHeader",
       this.$(".chk_first_row_header").prop("checked"));
+  },
+
+  onchange_chkSnipLongCol: function(){
+    this.model.set(
+      "chkSnipLongCol",
+      this.$(".chk_snip_long_col").prop("checked"));
+  },
+
+  onchange_colContentLengthMax: function(){
+    this.model.set(
+      "colContentLengthMax",
+      parseInt(this.$(".col_content_length_max").val(), 10));
   },
 
   getInputType: function(){
