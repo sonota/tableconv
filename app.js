@@ -1,3 +1,6 @@
+var SNIP_STR = "...";
+var COL_CONTENT_LENGTH_MAX_DEFAULT = 32;
+
 function puts(){
   console.log.apply(console, arguments);
 }
@@ -117,7 +120,9 @@ var AppM = Backbone.Model.extend({
     inputType: null, // regexp | mysql | postgresql | gfm_table
     regexpPattern: "\t",
     chkColNumber: false,
-    customHeader: ""
+    customHeader: "",
+    chkSnipLongCol: false,
+    colContentLengthMax: COL_CONTENT_LENGTH_MAX_DEFAULT
   },
 
   parse: function(){
@@ -223,7 +228,24 @@ var AppM = Backbone.Model.extend({
     return tsv;
   },
 
+  _colContentToHtml: function(content){
+    var max = this.get("colContentLengthMax");
+    if( this.get("chkSnipLongCol")
+        && content.length > max
+      ){
+      var half = Math.floor( (max - SNIP_STR.length) / 2 );
+      var head = content.substring(0, half);
+      var tail = content.substring(content.length - half, content.length);
+      return escapeHtml(head)
+          + '<span class="col_snip">' + SNIP_STR + '</span>'
+          + escapeHtml(tail);
+    }else{
+      return escapeHtml(content);
+    }
+  },
+
   toHtmlTable: function(){
+    var me = this;
     var h = "";
 
     h += '<tr><th>#</th>' + this.headColsNumber.map(function(col){
@@ -251,7 +273,7 @@ var AppM = Backbone.Model.extend({
         }else{
           h += '<td>';
         }
-        h += escapeHtml(col) + '</td>';
+        h += me._colContentToHtml(col) + '</td>';
       });
       h += '</tr>';
     });
@@ -318,7 +340,9 @@ var AppV = Backbone.View.extend({
         "customHeader": this.getCustomHeader(),
         "chkCustomHeader": this.$(".chk_custom_header").prop("checked"),
         "chkFirstRowHeader": this.$(".chk_first_row_header").prop("checked"),
-        "input": this.$(".input").val()
+        "input": this.$(".input").val(),
+        "chkSnipLongCol": this.$(".chk_snip_long_col").prop("checked"),
+        "colContentLengthMax": this.getColContentLengthMax()
       },
       { silent: true }
     );
@@ -333,7 +357,9 @@ var AppV = Backbone.View.extend({
     "change .chk_col_number": "onchange_chkColNumber",
     "input .custom_header": "oninput_customHeader",
     "change .chk_custom_header": "onchange_chkCustomHeader",
-    "change .chk_first_row_header": "onchange_chkFirstRowHeader"
+    "change .chk_first_row_header": "onchange_chkFirstRowHeader",
+    "change .chk_snip_long_col": "onchange_chkSnipLongCol",
+    "change .col_content_length_max": "onchange_colContentLengthMax"
   },
 
   render: function(){
@@ -355,6 +381,12 @@ var AppV = Backbone.View.extend({
     this.$(".custom_header").prop(
       "disabled",
       ! this.model.get("chkCustomHeader"));
+
+    this.$(".col_content_length_max").prop(
+      "disabled",
+      ! this.model.get("chkSnipLongCol"));
+
+    this.$(".col_content_length_max").val(this.model.get("colContentLengthMax"));
 
     setTimeout(function(){
       me.$(".processing_indicator").hide();
@@ -395,12 +427,36 @@ var AppV = Backbone.View.extend({
       this.$(".chk_first_row_header").prop("checked"));
   },
 
+  onchange_chkSnipLongCol: function(){
+    this.model.set(
+      "chkSnipLongCol",
+      this.$(".chk_snip_long_col").prop("checked"));
+  },
+
+  onchange_colContentLengthMax: function(){
+    this.model.set(
+      "colContentLengthMax",
+      this.getColContentLengthMax());
+    this.model.trigger("change:colContentLengthMax");
+  },
+
   getInputType: function(){
     return this.$("[name=input_type]:checked").val();
   },
 
   getCustomHeader: function(){
     return this.$(".custom_header").val().split(",").map(strip);
+  },
+
+  getColContentLengthMax: function(){
+    var n = parseInt(this.$(".col_content_length_max").val(), 10);
+    if(isNaN(n)){
+      return COL_CONTENT_LENGTH_MAX_DEFAULT;
+    }
+    if(n < SNIP_STR.length + 2){
+      return SNIP_STR.length + 2;
+    }
+    return n;
   }
 });
 
