@@ -371,7 +371,7 @@ var AppV = Backbone.View.extend({
     this.$(".output_json_array").val(this.model.toJsonArray());
     this.$(".output_json_object").val(this.model.toJsonObject());
     this.$(".output_tsv").val(this.model.toTsv());
-    this.$(".output_gfm_table").html(this.model.toGfmTable());
+    this.$(".output_gfm_table").val(this.model.toGfmTable());
     this.$(".html_table").html(this.model.toHtmlTable());
 
     this.$(".regexp_pattern").prop(
