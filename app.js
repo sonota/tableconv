@@ -230,16 +230,22 @@ var AppM = Backbone.Model.extend({
     return tsv;
   },
 
+  _mkSpanHtml: function(content, className){
+    return '<span class="'+ className +'">' + content + '</span>';
+  },
+
   _colContentToHtml: function(content){
     var max = this.get("colContentLengthMax");
-    if( this.get("chkSnipLongCol")
+    if( content === "" ){
+      return this._mkSpanHtml("(empty)", "col_empty");
+    }else if( this.get("chkSnipLongCol")
         && content.length > max
       ){
       var half = Math.floor( (max - SNIP_STR.length) / 2 );
       var head = content.substring(0, half);
       var tail = content.substring(content.length - half, content.length);
       return escapeHtml(head)
-          + '<span class="col_snip">' + SNIP_STR + '</span>'
+          + this._mkSpanHtml(SNIP_STR, "col_snip")
           + escapeHtml(tail);
     }else{
       return escapeHtml(content);
