@@ -236,7 +236,9 @@ var AppM = Backbone.Model.extend({
 
   _colContentToHtml: function(content){
     var max = this.get("colContentLengthMax");
-    if( this.get("chkSnipLongCol")
+    if( content === "" ){
+      return this._mkSpanHtml("(empty)", "col_empty");
+    }else if( this.get("chkSnipLongCol")
         && content.length > max
       ){
       var half = Math.floor( (max - SNIP_STR.length) / 2 );
