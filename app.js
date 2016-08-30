@@ -66,9 +66,11 @@ function isNumber(s){
 function parse_regexp(text, options){
   var lines = text.split("\n");
   var re = options.re;
-  return _(lines).map(function(line){
+  return _.chain(lines).filter(function(line){
+    return ! /^\s*$/.test(line);
+  }).map(function(line){
     return line.split(re);
-  });
+  }).value();
 }
 
 function parse_mysql(text){
