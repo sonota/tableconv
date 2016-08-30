@@ -5,15 +5,6 @@ function puts(){
   console.log.apply(console, arguments);
 }
 
-function escapeHtml(s){
-  return s
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
-}
-
 function strip(s){
   return s.replace(/^\s+|\s+$/g, "");
 }
@@ -59,9 +50,30 @@ function padRight(s, n){
   return mkstr(" ", pad) + s;
 }
 
+function mapChars(str, fn){
+  var chars = [];
+  for(var i=0,len=str.length; i<len; i++){
+    chars.push(fn(str.charAt(i), i));
+  }
+  return chars;
+}
+
 function isNumber(s){
   return /^-?[\d,]+$/.test(s);
 }
+
+function mkSpanHtml(content, className){
+  return '<span class="' + className + '">' + content + '</span>';
+}
+
+var SPAN_WS = mkSpanHtml("&nbsp;", "col_space");
+
+var SPAN_CTRL_CD_MAP = {
+  "\\": mkSpanHtml("\\\\", "col_ctrl_cd"),
+  "\r": mkSpanHtml("\\r", "col_ctrl_cd"),
+  "\n": mkSpanHtml("\\n", "col_ctrl_cd"),
+  "\t": mkSpanHtml("\\t", "col_ctrl_cd")
+};
 
 
 var StrScan = (function(){
@@ -108,6 +120,68 @@ var StrScan = (function(){
 
   return StrScan;
 })();
+
+
+var ColContent = {
+  _tokenize: function(str){
+    // create token
+    function _t(type, str){
+      return { type: type, str: str };
+    }
+
+    var ts = [];
+    var posPrevEom = 0; // previous end of match
+    var ss = new StrScan(str);
+
+    /**
+     * \u0020: normal white space
+     * \u00a0: nbsp
+     */
+    while( ! ss.isEos() ){
+      if( ss.scan( /^[\u0020\u00a0]+/ ) ){
+        if( posPrevEom < ss.posBom ){
+          ts.push( _t("plain", ss.substring(posPrevEom, ss.posBom)) );
+        }
+        ts.push( _t("space", ss.m[0]) );
+        posPrevEom = ss.pos;
+      }else if( ss.scan(/^[\t\r\n\\]/) ){
+        if( posPrevEom < ss.posBom ){
+          ts.push( _t("plain", ss.substring(posPrevEom, ss.posBom)) );
+        }
+        ts.push( _t("ctrl_cd", ss.m[0]) );
+        posPrevEom = ss.pos;
+      }else{
+        // 先頭にマッチするまでスキップ
+        ss.movePos(1);
+      }
+    }
+
+    if(posPrevEom < ss.pos){
+      ts.push( _t("plain", ss.substring(posPrevEom, ss.pos)) );
+    }
+
+    return ts;
+  },
+
+  _toHtml: function(tokens){
+    return _.map(tokens, function(token){
+      if(token.type === 'space'){
+        return mkstr(SPAN_WS, token.str.length);
+      }else if(token.type === 'ctrl_cd'){
+        return mapChars(token.str, function(c, i){
+          return SPAN_CTRL_CD_MAP[c];
+        }).join("");
+      }else{
+        return _.escape(token.str);
+      }
+    }).join("");
+  },
+
+  toHtml: function(val){
+    var tokens = this._tokenize(val);
+    return this._toHtml(tokens);
+  }
+};
 
 
 function parse_regexp(text, options){
@@ -291,11 +365,11 @@ var AppM = Backbone.Model.extend({
       var half = Math.floor( (max - SNIP_STR.length) / 2 );
       var head = content.substring(0, half);
       var tail = content.substring(content.length - half, content.length);
-      return escapeHtml(head)
+      return ColContent.toHtml(head)
           + this._mkSpanHtml(SNIP_STR, "col_snip")
-          + escapeHtml(tail);
+          + ColContent.toHtml(tail);
     }else{
-      return escapeHtml(content);
+      return ColContent.toHtml(content);
     }
   },
 
