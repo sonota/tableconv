@@ -66,7 +66,7 @@ function mkSpanHtml(content, className){
   return '<span class="' + className + '">' + content + '</span>';
 }
 
-var SPAN_WS = mkSpanHtml("&nbsp;", "col_space");
+var SPAN_WS = mkSpanHtml(" ", "col_space");
 
 var SPAN_CTRL_CD_MAP = {
   "\\": mkSpanHtml("\\\\", "col_ctrl_cd"),
