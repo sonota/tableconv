@@ -450,6 +450,27 @@ var AppM = Backbone.Model.extend({
     }).join("");
 
     return s;
+  },
+
+  toSqlInsert: function(){
+    var headCols = this.headColsCustom || this.headCols || this.headColsNumber;
+
+    var s = "INSERT INTO {table}\n";
+
+    s += "  (";
+    s += headCols.join(", ");
+    s += ")\nVALUES\n"
+
+    s += _(this.bodyRows).map(function(cols, ri){
+      var line = ""
+      line += (ri === 0) ? "  " : " ,";
+      line += "(";
+      line += _(cols).map(function(col){
+        return "'" + col + "'";
+      }).join(", ");
+      return line += ")\n";
+    }).join("");
+    return s + ";\n";
   }
 });
 
@@ -497,6 +518,7 @@ var AppV = Backbone.View.extend({
     this.$(".output_json_object").val(this.model.toJsonObject());
     this.$(".output_tsv").val(this.model.toTsv());
     this.$(".output_gfm_table").val(this.model.toGfmTable());
+    this.$(".output_sql_insert").val(this.model.toSqlInsert());
     this.$(".html_table").html(this.model.toHtmlTable());
 
     this.$(".regexp_pattern").prop(
