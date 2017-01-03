@@ -413,7 +413,7 @@ var AppM = Backbone.Model.extend({
     _(headCols).each(function(col, ci){
       maxlens[ci] = Math.max(maxlens[ci] || 0, strlen(col));
     });
-    _(this.rows).each(function(cols){
+    _(this.bodyRows).each(function(cols){
       _(cols).each(function(col, ci){
         maxlens[ci] = Math.max(maxlens[ci] || 0, strlen(col));
       });
