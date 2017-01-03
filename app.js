@@ -294,6 +294,19 @@ var AppM = Backbone.Model.extend({
     return numCols;
   },
 
+  getMaxlens: function(headCols){
+    var maxlens = [];
+    _(headCols).each(function(col, ci){
+      maxlens[ci] = Math.max(maxlens[ci] || 0, strlen(col));
+    });
+    _(this.bodyRows).each(function(cols){
+      _(cols).each(function(col, ci){
+        maxlens[ci] = Math.max(maxlens[ci] || 0, strlen(col));
+      });
+    });
+    return maxlens;
+  },
+
   toJsonArray: function(){
     var headCols = this.headColsCustom || this.headCols || this.headColsNumber;
     var json = '{"header":' + JSON.stringify(headCols);
@@ -409,16 +422,7 @@ var AppM = Backbone.Model.extend({
     var numCols = this.getNumCols(this.rows);
     var headCols = this.headColsCustom || this.headCols || this.headColsNumber;
 
-    var maxlens = [];
-    _(headCols).each(function(col, ci){
-      maxlens[ci] = Math.max(maxlens[ci] || 0, strlen(col));
-    });
-    _(this.bodyRows).each(function(cols){
-      _(cols).each(function(col, ci){
-        maxlens[ci] = Math.max(maxlens[ci] || 0, strlen(col));
-      });
-    });
-    maxlens = maxlens.map(function(len){
+    var maxlens = this.getMaxlens(headCols).map(function(len){
       return Math.max(len, 3);
     });
 
