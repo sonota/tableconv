@@ -458,19 +458,25 @@ var AppM = Backbone.Model.extend({
 
   toSqlInsert: function(){
     var headCols = this.headColsCustom || this.headCols || this.headColsNumber;
+    var maxlens = this.getMaxlens(headCols).map((col)=>{
+      // adjust width for quote characters
+      return col + 2;
+    });
 
     var s = "INSERT INTO {table}\n";
 
     s += "  (";
-    s += headCols.join(", ");
+    s += headCols.map((col, ci)=>{
+      return padLeft(col, maxlens[ci]);
+    }).join(", ");
     s += ")\nVALUES\n"
 
     s += _(this.bodyRows).map(function(cols, ri){
       var line = ""
       line += (ri === 0) ? "  " : " ,";
       line += "(";
-      line += _(cols).map(function(col){
-        return "'" + col + "'";
+      line += _(cols).map(function(col, ci){
+        return padLeft("'" + col + "'", maxlens[ci]);
       }).join(", ");
       return line += ")\n";
     }).join("");
