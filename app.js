@@ -17,6 +17,9 @@ function includeZenkaku(s){
 }
 
 function strlen(s){
+  if(s == null){
+    return 0;
+  }
   if( includeZenkaku(s) ){
     var len = 0;
     for(var i=0,slen=s.length; i<slen; i++){
@@ -204,7 +207,9 @@ function parse_mysql(text){
     var cols = (" " + line + " ").split(" | ");
     cols.shift();
     cols.pop();
-    return cols.map(strip);
+    return cols.map(strip).map((x)=>{
+      return x === 'NULL' ? null : x;
+    });
   }).value();
 }
 
@@ -366,7 +371,9 @@ var AppM = Backbone.Model.extend({
 
   _colContentToHtml: function(content){
     var max = this.get("colContentLengthMax");
-    if( content === "" ){
+    if( content == null ){
+      return mkSpanHtml("(null)", "col_null");
+    }else if( content === "" ){
       return mkSpanHtml("(empty)", "col_empty");
     }else if( this.get("chkSnipLongCol")
         && content.length > max
@@ -476,7 +483,11 @@ var AppM = Backbone.Model.extend({
       line += (ri === 0) ? "  " : " ,";
       line += "(";
       line += _(cols).map(function(col, ci){
-        return padLeft("'" + col + "'", maxlens[ci]);
+        if(col == null){
+          return padLeft("NULL", maxlens[ci]);
+        }else{
+          return padLeft("'" + col + "'", maxlens[ci]);
+        }
       }).join(", ");
       return line += ")\n";
     }).join("");
