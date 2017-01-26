@@ -477,10 +477,10 @@ var AppM = Backbone.Model.extend({
     s += headCols.map((col, ci)=>{
       return padLeft(col, maxlens[ci]);
     }).join(", ");
-    s += ")\nVALUES\n"
+    s += ")\nVALUES\n";
 
     s += _(this.bodyRows).map(function(cols, ri){
-      var line = ""
+      var line = "";
       line += (ri === 0) ? "  " : " ,";
       line += "(";
       line += _(cols).map(function(col, ci){
