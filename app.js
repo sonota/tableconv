@@ -1,4 +1,5 @@
 var SNIP_STR = "...";
+var NULL_STR = "NULL";
 var COL_CONTENT_LENGTH_MAX_DEFAULT = 32;
 
 function puts(){
@@ -306,7 +307,7 @@ var AppM = Backbone.Model.extend({
     });
     _(this.bodyRows).each(function(cols){
       _(cols).each(function(col, ci){
-        maxlens[ci] = Math.max(maxlens[ci] || 0, strlen(col));
+        maxlens[ci] = Math.max(maxlens[ci] || 0, strlen(col || NULL_STR));
       });
     });
     return maxlens;
@@ -451,9 +452,9 @@ var AppM = Backbone.Model.extend({
       _(cols).each(function(col, ci){
         line += " ";
         if( isNumber(col) ){
-          line += padRight(col, maxlens[ci]);
+          line += padRight(col || NULL_STR, maxlens[ci]);
         }else{
-          line += padLeft(col, maxlens[ci]);
+          line += padLeft(col || NULL_STR, maxlens[ci]);
         }
         line += " |";
       });
