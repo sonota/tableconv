@@ -1,6 +1,7 @@
 var SNIP_STR = "...";
 var NULL_STR = "NULL";
 var COL_CONTENT_LENGTH_MAX_DEFAULT = 32;
+var NUM_ROWS_MAX = 500;
 
 function puts(){
   console.log.apply(console, arguments);
@@ -190,6 +191,11 @@ var ColContent = {
 
 function parse_regexp(text, options){
   var lines = text.split("\n");
+  if(lines.length > NUM_ROWS_MAX){
+    alert("Too many rows");
+    return [];
+  }
+
   var re = options.re;
   return _.chain(lines).filter(function(line){
     return ! /^\s*$/.test(line);
@@ -200,6 +206,11 @@ function parse_regexp(text, options){
 
 function parse_mysql(text){
   var lines = text.split("\n");
+  if(lines.length > NUM_ROWS_MAX){
+    alert("Too many rows");
+    return [];
+  }
+
   return _.chain(lines).filter(function(line){
     return ! ( /^\+/.test(line)
                || /^\s*$/.test(line)
@@ -216,6 +227,11 @@ function parse_mysql(text){
 
 function parse_postgresql(text){
   var lines = text.split("\n");
+  if(lines.length > NUM_ROWS_MAX){
+    alert("Too many rows");
+    return [];
+  }
+
   return _.chain(lines).filter(function(line){
     return ! ( /^\-/.test(line)
                || /^\s*$/.test(line)
@@ -230,6 +246,11 @@ function parse_postgresql(text){
 
 function parse_gfm_table(text){
   var lines = text.split("\n");
+  if(lines.length > NUM_ROWS_MAX){
+    alert("Too many rows");
+    return [];
+  }
+
   return _.chain(lines).filter(function(line){
     return ! ( /^\| ----/.test(line)
                || /^\s*$/.test(line)
