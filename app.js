@@ -475,7 +475,7 @@ var AppM = Backbone.Model.extend({
         if( isNumber(col) ){
           line += padRight(col || NULL_STR, maxlens[ci]);
         }else{
-          line += padLeft(col || NULL_STR, maxlens[ci]);
+          line += padLeft(col == null ? NULL_STR : col, maxlens[ci]);
         }
         line += " |";
       });
