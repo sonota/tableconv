@@ -1,7 +1,7 @@
-var SNIP_STR = "...";
-var NULL_STR = "NULL";
-var COL_CONTENT_LENGTH_MAX_DEFAULT = 32;
-var NUM_ROWS_MAX = 500;
+const SNIP_STR = "...";
+const NULL_STR = "NULL";
+const COL_CONTENT_LENGTH_MAX_DEFAULT = 32;
+const NUM_ROWS_MAX = 500;
 
 function puts(){
   console.log.apply(console, arguments);
@@ -71,9 +71,9 @@ function mkSpanHtml(content, className){
   return '<span class="' + className + '">' + content + '</span>';
 }
 
-var SPAN_WS = mkSpanHtml(" ", "col_space");
+const SPAN_WS = mkSpanHtml(" ", "col_space");
 
-var SPAN_CTRL_CD_MAP = {
+const SPAN_CTRL_CD_MAP = {
   "\\": mkSpanHtml("\\\\", "col_ctrl_cd"),
   "\r": mkSpanHtml("\\r", "col_ctrl_cd"),
   "\n": mkSpanHtml("\\n", "col_ctrl_cd"),
