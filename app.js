@@ -24,7 +24,7 @@ function strlen(s){
   }
   if( includeZenkaku(s) ){
     var len = 0;
-    for(var i=0,slen=s.length; i<slen; i++){
+    for(let i=0,slen=s.length; i<slen; i++){
       if( includeZenkaku(s.charAt(i)) ){
         len += 2;
       }else{
@@ -39,7 +39,7 @@ function strlen(s){
 
 function mkstr(s, n){
   var ret = "";
-  for(var i=0; i<n; i++){
+  for(let i=0; i<n; i++){
     ret += s;
   }
   return ret;
@@ -57,7 +57,7 @@ function padRight(s, n){
 
 function mapChars(str, fn){
   var chars = [];
-  for(var i=0,len=str.length; i<len; i++){
+  for(let i=0,len=str.length; i<len; i++){
     chars.push(fn(str.charAt(i), i));
   }
   return chars;
