@@ -362,31 +362,29 @@ var AppM = Backbone.Model.extend({
     return json;
   },
 
+  toTsvRow: function(cols){
+    // quote by double quote
+    return cols.map(JSON.stringify).join("\t");
+  },
+
   toTsv: function(){
+    const me = this;
     var tsv = "";
 
     if( this.get("chkColNumber") ){
-      tsv += this.headColsNumber.map(function(col){
-        return JSON.stringify(col); // quote by double quote
-      }).join("\t") + "\n";
+      tsv += this.toTsvRow(this.headColsNumber) + "\n";
     }
 
     if( this.get("chkCustomHeader") ){
-      tsv += this.headColsCustom.map(function(col){
-        return JSON.stringify(col); // quote by double quote
-      }).join("\t") + "\n";
+      tsv += this.toTsvRow(this.headColsCustom) + "\n";
     }
 
     if( this.get("chkFirstRowHeader") ){
-      tsv += this.headCols.map(function(col){
-        return JSON.stringify(col); // quote by double quote
-      }).join("\t") + "\n";
+      tsv += this.toTsvRow(this.headCols) + "\n";
     }
 
     tsv += _(this.bodyRows).map(function(cols){
-      return cols.map(function(col){
-        return JSON.stringify(col); // quote by double quote
-      }).join("\t") + "\n";
+      return me.toTsvRow(cols) + "\n";
     }).join("");
     return tsv;
   },
