@@ -654,4 +654,14 @@ $(function(){
     model: appM,
     el: $("body")[0]
   });
+
+  if( /\?test=1$/.test(location.href) ){
+    const el = document.createElement("script");
+    el.setAttribute("src", "./test.js");
+    const body = document.querySelector("body");
+    body.appendChild(el);
+    $(el).on("load", ()=>{
+      _test();
+    });
+  }
 });
