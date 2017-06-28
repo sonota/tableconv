@@ -276,7 +276,7 @@ var AppM = Backbone.Model.extend({
   },
 
   parse: function(){
-    var me = this;
+    const me = this;
     var text = this.get("input");
 
     switch(this.get("inputType")){
@@ -410,7 +410,7 @@ var AppM = Backbone.Model.extend({
   },
 
   toHtmlTable: function(){
-    var me = this;
+    const me = this;
     var h = "";
 
     h += '<tr><th>#</th>' + this.headColsNumber.map(function(col){
@@ -550,7 +550,7 @@ var AppV = Backbone.View.extend({
   },
 
   render: function(){
-    var me = this;
+    const me = this;
 
     this.$(".processing_indicator").show();
 
