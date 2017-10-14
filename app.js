@@ -200,6 +200,169 @@ var ColContent = {
 };
 
 
+class Mrtable {
+  static splitRow(line){
+    const line2 = line + " ";
+    const numRepeatMax = line2.length;
+    let pos = 2;
+    let posDelta = null;
+    let rest = "";
+    const cols = [];
+    let buf = "";
+
+    for( let i=0; i<numRepeatMax; i++ ){
+      if( pos >= numRepeatMax ){ break; }
+      posDelta = 1;
+      rest = line2.substring(pos);
+      if( /^ \| /.test(rest) ){
+        if (buf.length > 0) { cols.push(buf); buf = ""; }
+        posDelta = 3;
+      }else if( /^\\/.test(rest) ){
+        if (rest[1] === "|") {
+          buf += rest[1];
+          posDelta = 2;
+        }else{
+          buf += rest[0];
+          buf += rest[1];
+          posDelta = 2;
+        }
+      }else{
+        buf += rest[0];
+      }
+      pos += posDelta;
+    }
+    if( buf.length > 0 ){ cols.push(buf); buf = ""; }
+
+    return cols;
+  }
+
+  static jsonEncode(val){
+    const json = JSON.stringify([val]);
+    if( json.match(/^\["(.*)"\]/) ){
+      return RegExp.$1;
+    }else if( json.match(/^\[(.*)\]/) ){
+      return RegExp.$1;
+    }else{
+      return json;
+    }
+  }
+
+  static jsonDecode(str){
+    if( /^".*"$/.test(str) ){
+      return JSON.parse('[' + str + ']')[0];
+    }else{
+      return JSON.parse('["' + str + '"]')[0];
+    }
+  }
+
+  static parseCol(col){
+    const NULL_STR = "null";
+    if( col === '"' + NULL_STR + '"' ){
+      return NULL_STR;
+    }else if( col === NULL_STR ){
+      return null;
+    }else{
+      return Mrtable.jsonDecode(col);
+    }
+  }
+
+  static parse(text){
+    var lines = text.split(/\r?\n/);
+    if( lines.length > NUM_ROWS_MAX ){
+      alert("Too many rows");
+      return [];
+    }
+
+    return lines.filter((line)=>{
+      return ! ( /^\| ---/.test(line)
+                 || /^\s*$/.test(line)
+               );
+    }).map((line)=>{
+      const cols = Mrtable.splitRow(line);
+      const cols_stripped = cols.map(strip);
+      const cols_parsed = cols_stripped.map(Mrtable.parseCol);
+      return cols_parsed;
+    });
+  }
+
+  static mapCol(rows, fn){
+    return rows.map((cols)=>{
+      return cols.map(fn);
+    });
+  }
+
+  static serealizeCol(col){
+    if( col == null ){
+      return "null";
+    }else if( col === "null" ){
+      return '"null"'
+    }
+
+    const ret = Mrtable.jsonEncode(col);
+    if( ret === "" ){
+      return '""';
+    }else if( ret.match(/^\s+/) || ret.match(/\s+$/) ){
+      return '"' + ret + '"';
+    }else{
+      return ret.replace(/\|/g, "\\|");
+    }
+  }
+
+  static colLen(col){
+    return strlen(col);
+  }
+
+  static calcMaxlens(rows){
+    const numCols = rows[0].length;
+    const maxlens = [];
+    for( let ci=0; ci<numCols; ci++ ){
+      const colsAtCi = rows.map((cols)=>{ return cols[ci]; })
+      const lens = colsAtCi.map((col)=>{
+        return Mrtable.colLen(col);
+      });
+      maxlens.push(Math.max.apply(null, lens));
+    }
+    return maxlens;
+  }
+
+  static padCol(col, maxlen){
+    if( col.match(/^\-?\d+$/) ){
+      return padRight(col, maxlen);
+    }else{
+      return padLeft(col, maxlen);
+    }
+  }
+
+  static generate(rows, headCols){
+    const unioned = [headCols].concat(rows);
+
+    const numCols = headCols.length;
+    const serealized = Mrtable.mapCol(unioned, Mrtable.serealizeCol);
+    const maxlens = Mrtable.calcMaxlens(serealized);
+    const padded = Mrtable.mapCol(serealized, (col, ci)=>{
+      return Mrtable.padCol(col, maxlens[ci]);
+    });
+
+    let lines = [];
+
+    const headCols2 = padded[0];
+    const rows2 = padded.slice(1);
+
+    lines.push("| " + headCols2.join(" | ") + " |");
+
+    const seps = _.range(0, numCols).map((ci)=>{
+      return mkstr("-", maxlens[ci]);
+    });
+    lines.push("| " + seps.join(" | ") + " |");
+
+    rows2.forEach((cols)=>{
+      lines.push("| " + cols.join(" | ") + " |");
+    });
+    return lines.map(line => line + "\n").join("");
+  }
+}
+
+
 function parse_regexp(text, options){
   var lines = text.split("\n");
   if(lines.length > NUM_ROWS_MAX){
@@ -255,30 +418,15 @@ function parse_postgresql(text){
   }).value();
 }
 
-function parse_gfm_table(text){
-  var lines = text.split("\n");
-  if(lines.length > NUM_ROWS_MAX){
-    alert("Too many rows");
-    return [];
-  }
-
-  return _.chain(lines).filter(function(line){
-    return ! ( /^\| ----/.test(line)
-               || /^\s*$/.test(line)
-             );
-  }).map(function(line){
-    var cols = (" " + line + " ").split(" | ");
-    cols.shift();
-    cols.pop();
-    return cols.map(strip);
-  }).value();
+function parse_mrtable(text){
+  return Mrtable.parse(text);
 }
 
 var AppM = Backbone.Model.extend({
   defaults: {
     input: "",
     rows: [],
-    inputType: null, // regexp | mysql | postgresql | gfm_table
+    inputType: null, // regexp | mysql | postgresql | mrtable
     regexpPattern: "\t",
     chkColNumber: false,
     customHeader: "",
@@ -297,8 +445,8 @@ var AppM = Backbone.Model.extend({
     case "postgresql":
       this.rows = parse_postgresql(text);
       break;
-    case "gfm_table":
-      this.rows = parse_gfm_table(text);
+    case "mrtable":
+      this.rows = parse_mrtable(text);
       break;
     default:
       var re = new RegExp(me.get("regexpPattern"));
@@ -456,42 +604,10 @@ var AppM = Backbone.Model.extend({
     return h;
   },
 
-  toGfmTable: function(){
+  toMrtable: function(){
     var numCols = this.getNumCols(this.rows);
     var headCols = this.headColsCustom || this.headCols || this.headColsNumber;
-
-    var maxlens = this.getMaxlens(headCols).map(function(len){
-      return Math.max(len, 3);
-    });
-
-    var s = "";
-    s += "|";
-    _(headCols).each(function(col, ci){
-      s += " " + padLeft(col, maxlens[ci]) + " |";
-    });
-    s += "\n";
-
-    s += "|";
-    _(_.range(0, numCols)).each(function(ci){
-      s += " " + mkstr("-", maxlens[ci]) + " |";
-    });
-    s += "\n";
-
-    s += _(this.bodyRows).map(function(cols){
-      var line = "|";
-      _(cols).each(function(col, ci){
-        line += " ";
-        if( isNumber(col) ){
-          line += padRight(col || NULL_STR, maxlens[ci]);
-        }else{
-          line += padLeft(col == null ? NULL_STR : col, maxlens[ci]);
-        }
-        line += " |";
-      });
-      return line += "\n";
-    }).join("");
-
-    return s;
+    return Mrtable.generate(this.bodyRows, headCols);
   },
 
   toSqlInsert: function(){
@@ -598,7 +714,7 @@ var AppV = Backbone.View.extend({
     this.$(".output_json_array").val(this.model.toJsonArray());
     this.$(".output_json_object").val(this.model.toJsonObject());
     this.$(".output_tsv").val(this.model.toTsv());
-    this.$(".output_gfm_table").val(this.model.toGfmTable());
+    this.$(".output_mrtable").val(this.model.toMrtable());
     this.$(".output_sql_insert").val(this.model.toSqlInsert());
     this.$(".html_table").html(this.model.toHtmlTable());
 

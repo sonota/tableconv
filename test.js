@@ -161,16 +161,47 @@ function _test(){
       assertEq(lines[1], ",dd,ee");
     },
 
-    function test_parse_gfm_table(){
-      const rows = parse_gfm_table(
-        "| aa | bb | cc |" + "\n" +
-        "|    | dd | ee |" + "\n"
-      );
-      assertEq(rows.length, 2);
+    function test_mrt_splitRow_1(){
+      const line = "| a | b |";
+      const cols = Mrtable.splitRow(line);
+      assertEq(cols.length, 2);
+    },
 
-      const lines = rows.map(row => row.join(","));
-      assertEq(lines[0], "aa,bb,cc");
-      assertEq(lines[1], ",dd,ee");
+    function test_mrt_splitRow_2(){
+      const line = "| a | b \\| c | \" \\| \" | d\\\"e |";
+      const cols = Mrtable.splitRow(line);
+      assertEq(cols.length, 4);
+
+      assertEq(cols[0], "a");
+      assertEq(cols[1], "b | c");
+      assertEq(cols[2], '" | "');
+      assertEq(cols[3], 'd\\"e');
+    },
+
+    function test_parse_mrtable(){
+      const rows = parse_mrtable(
+        "| c1xxxx | bb | cc |" + "\r\n" +
+        "| -123 | 0 | e \\| e |" + "\n" +
+        "| 12 | dd | ee |" + "\n" +
+        "| null | \"null\" | \"\" |" + "\n"
+      );
+      assertEq(rows.length, 4);
+
+      const lines = rows.map((cols)=>{
+        return cols.map(col=>{
+          if (col == null) {
+            return "<null>";
+          } else if (col === "") {
+            return "<empty>";
+          } else {
+            return col;
+          }
+        }).join(",");
+      });
+      assertEq(lines[0], "c1xxxx,bb,cc");
+      assertEq(lines[1], "-123,0,e | e");
+      assertEq(lines[2], "12,dd,ee");
+      assertEq(lines[3], "<null>,null,<empty>");
     }
   ];
 
