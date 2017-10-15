@@ -27,6 +27,7 @@ textarea {
 table {
   background: #fff;
   border-collapse: collapse;
+  margin: 0.5rem 0;
 }
 
 th, td {
@@ -132,18 +133,18 @@ td.right {
   <input type="checkbox" class="chk_first_row_header" />
   first line is header
 </label>
-/
-<label>
-  <input type="checkbox" class="chk_snip_long_col"  />
-  snip long column
-  <input type="text" class="col_content_length_max" name="col_content_length_max" value="64" />
-</label>
 
 <hr />
 
 <h1>Output</h1>
 
 <h2>Table</h2>
+
+<label>
+  <input type="checkbox" class="chk_snip_long_col"  />
+  snip long column
+  <input type="text" class="col_content_length_max" name="col_content_length_max" value="64" />
+</label>
 
 <table class="html_table"></table>
 
