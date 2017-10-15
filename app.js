@@ -518,7 +518,7 @@ var AppM = Backbone.Model.extend({
       return maxlens;
     }
 
-    var headCols = this.headColsCustom || this.headCols || this.headColsNumber;
+    const headCols = this.headColsCustom || this.headCols || this.headColsNumber;
 
     const unioned = [headCols].concat(this.bodyRows);
     const serealized = unioned.map((cols)=>{
@@ -540,7 +540,7 @@ var AppM = Backbone.Model.extend({
     });
     const bodyRows2 = padded.slice(1);
 
-    var s = "INSERT INTO {table}\n";
+    let s = "INSERT INTO {table}\n";
 
     s += "  (";
     s += headCols2.join(", ");
