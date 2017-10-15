@@ -495,33 +495,62 @@ var AppM = Backbone.Model.extend({
   },
 
   toSqlInsert: function(){
+    function convertCol(col){
+      if( col == null ){
+        return "NULL";
+      }else if( col.match(/^now\(\)$/i) ){
+        return "NOW()";
+      }else{
+        return "'" + sqlEscape(col) + "'";
+      }
+    }
+
+    function calcMaxlens(rows){
+      const maxlens = [];
+      const numCols = rows[0].length;
+      for( let ci=0; ci<numCols; ci++ ){
+        const colsAtCi = [];
+        rows.forEach((cols)=>{
+          colsAtCi.push(cols[ci]);
+        });
+        maxlens[ci] = Math.max.apply(null, colsAtCi.map(strlen));
+      }
+      return maxlens;
+    }
+
     var headCols = this.headColsCustom || this.headCols || this.headColsNumber;
-    var maxlens = this.getMaxlens(headCols).map((col)=>{
-      // adjust width for quote characters
-      return col + 2;
+
+    const unioned = [headCols].concat(this.bodyRows);
+    const serealized = unioned.map((cols)=>{
+      return cols.map(convertCol);
     });
+
+    const maxlens = calcMaxlens(serealized);
+
+    const padded = serealized.map((cols)=>{
+      return cols.map((col, ci)=>{
+        return padLeft(col, maxlens[ci]);
+      });
+    });
+
+    const headCols2 = padded[0].map((col)=>{
+      // 両側の single quote を取る
+      col.match(/^'(.+)'( *)$/);
+      return " " + RegExp.$1 + " " + RegExp.$2;
+    });
+    const bodyRows2 = padded.slice(1);
 
     var s = "INSERT INTO {table}\n";
 
     s += "  (";
-    s += headCols.map((col, ci)=>{
-      return padLeft(col, maxlens[ci]);
-    }).join(", ");
+    s += headCols2.join(", ");
     s += ")\nVALUES\n";
 
-    s += _(this.bodyRows).map(function(cols, ri){
-      var line = "";
-      line += (ri === 0) ? "  " : " ,";
-      line += "(";
-      line += _(cols).map(function(col, ci){
-        if(col == null){
-          return padLeft("NULL", maxlens[ci]);
-        }else{
-          return padLeft("'" + sqlEscape(col) + "'", maxlens[ci]);
-        }
-      }).join(", ");
-      return line += ")\n";
+    s += bodyRows2.map(function(cols, ri){
+      return ((ri === 0) ? "  " : " ,")
+        + "(" + cols.join(", ") + ")\n";
     }).join("");
+
     return s + ";\n";
   }
 });
