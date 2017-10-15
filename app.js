@@ -71,6 +71,17 @@ function mkSpanHtml(content, className){
   return '<span class="' + className + '">' + content + '</span>';
 }
 
+function sqlEscape(str){
+  return str
+    .replace(/\\/g, "\\\\")
+    .replace(/'/g, "\\'")
+    .replace(/\r/g, "\\r")
+    .replace(/\n/g, "\\n")
+    .replace(/\t/g, "\\t")
+  ;
+}
+
+
 const SPAN_WS = mkSpanHtml(" ", "col_space");
 
 const SPAN_CTRL_CD_MAP = {
@@ -506,7 +517,7 @@ var AppM = Backbone.Model.extend({
         if(col == null){
           return padLeft("NULL", maxlens[ci]);
         }else{
-          return padLeft("'" + col + "'", maxlens[ci]);
+          return padLeft("'" + sqlEscape(col) + "'", maxlens[ci]);
         }
       }).join(", ");
       return line += ")\n";
