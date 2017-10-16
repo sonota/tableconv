@@ -45,12 +45,12 @@ function mkstr(s, n){
   return ret;
 }
 
-function padLeft(s, n){
+function padRight(s, n){
   var pad = n - strlen(s);
   return s + mkstr(" ", pad);
 }
 
-function padRight(s, n){
+function padLeft(s, n){
   var pad = n - strlen(s);
   return mkstr(" ", pad) + s;
 }
@@ -327,9 +327,9 @@ class Mrtable {
 
   static padCol(col, maxlen){
     if( col.match(/^\-?\d+$/) ){
-      return padRight(col, maxlen);
-    }else{
       return padLeft(col, maxlen);
+    }else{
+      return padRight(col, maxlen);
     }
   }
 
@@ -645,7 +645,7 @@ var AppM = Backbone.Model.extend({
 
     const padded = serealized.map((cols)=>{
       return cols.map((col, ci)=>{
-        return padLeft(col, maxlens[ci]);
+        return padRight(col, maxlens[ci]);
       });
     });
 
