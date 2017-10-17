@@ -321,7 +321,7 @@ class Mrtable {
       });
       maxlens.push(Math.max.apply(null, lens));
     }
-    return maxlens;
+    return maxlens.map((len)=>{ return Math.max(len, 3); });
   }
 
   static padCol(col, maxlen){
