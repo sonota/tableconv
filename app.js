@@ -215,7 +215,7 @@ class Mrtable {
       posDelta = 1;
       rest = line2.substring(pos);
       if( /^ \| /.test(rest) ){
-        if (buf.length > 0) { cols.push(buf); buf = ""; }
+        cols.push(buf); buf = "";
         posDelta = 3;
       }else if( /^\\/.test(rest) ){
         if (rest[1] === "|") {
@@ -231,7 +231,6 @@ class Mrtable {
       }
       pos += posDelta;
     }
-    if( buf.length > 0 ){ cols.push(buf); buf = ""; }
 
     return cols;
   }
