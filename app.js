@@ -492,8 +492,16 @@ var AppM = Backbone.Model.extend({
     return maxlens;
   },
 
+  // for customization
+  modifyHeadCol: function(col){
+    return col;
+  },
+
   toJsonArray: function(){
+    const me = this;
     var headCols = this.headColsCustom || this.headCols || this.headColsNumber;
+    headCols = headCols.map((col)=>{ return me.modifyHeadCol(col); });
+
     var json = '{"header":' + JSON.stringify(headCols);
     json += ', "rows": [\n';
     json += this.bodyRows.map(function(cols, i){
@@ -505,7 +513,10 @@ var AppM = Backbone.Model.extend({
   },
 
   toJsonObject: function(){
+    const me = this;
     var headCols = this.headColsCustom || this.headCols || this.headColsNumber;
+    headCols = headCols.map((col)=>{ return me.modifyHeadCol(col); });
+
     var json = '{"header":' + JSON.stringify(headCols);
     json += ', "rows": [\n';
     json += this.bodyRows.map(function(cols, i){
@@ -538,7 +549,8 @@ var AppM = Backbone.Model.extend({
     }
 
     if( this.get("chkFirstRowHeader") ){
-      tsv += this.toTsvRow(this.headCols) + "\n";
+      const headCols = this.headCols.map((col)=>{ return me.modifyHeadCol(col); });
+      tsv += this.toTsvRow(headCols) + "\n";
     }
 
     tsv += _(this.bodyRows).map(function(cols){
@@ -582,7 +594,8 @@ var AppM = Backbone.Model.extend({
     }
 
     if( this.get("chkFirstRowHeader") ){
-      h += '<tr><th>1st row</th>' + this.headCols.map(function(col){
+      const headCols = this.headCols.map((col)=>{ return me.modifyHeadCol(col); });
+      h += '<tr><th>1st row</th>' + headCols.map(function(col){
         return '<th>'+col+'</th>';
       }) + '</tr>';
     }
@@ -604,8 +617,11 @@ var AppM = Backbone.Model.extend({
   },
 
   toMrtable: function(){
+    const me = this;
     var numCols = this.getNumCols(this.rows);
     var headCols = this.headColsCustom || this.headCols || this.headColsNumber;
+    headCols = headCols.map((col)=>{ return me.modifyHeadCol(col); });
+    
     return Mrtable.generate(this.bodyRows, headCols);
   },
 
@@ -633,7 +649,9 @@ var AppM = Backbone.Model.extend({
       return maxlens;
     }
 
-    const headCols = this.headColsCustom || this.headCols || this.headColsNumber;
+    const me = this;
+    let headCols = this.headColsCustom || this.headCols || this.headColsNumber;
+    headCols = headCols.map((col)=>{ return me.modifyHeadCol(col); });
 
     const unioned = [headCols].concat(this.bodyRows);
     const serealized = unioned.map((cols)=>{
