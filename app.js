@@ -273,7 +273,7 @@ class Mrtable {
     }
 
     return lines.filter((line)=>{
-      return ! ( /^\| ---/.test(line)
+      return ! ( /^\| \-\-\-+/.test(line)
                  || /^\s*$/.test(line)
                );
     }).map((line)=>{
