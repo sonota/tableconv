@@ -294,12 +294,12 @@ class Mrtable {
       return "";
     }else if( col === "" ){
       return '""';
-    }else if( /\-+/.test(col) ){
-      return '"' + col + '"';
     }
 
     const ret = Mrtable.jsonEncode(col);
-    if( ret.match(/^\s+/) || ret.match(/\s+$/) ){
+    if( ret.match(/^\s+/) || ret.match(/\s+$/)
+        || /^\-+$/.test(ret)
+      ){
       return '"' + ret + '"';
     }else{
       return ret.replace(/\|/g, "\\|");
