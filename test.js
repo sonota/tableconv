@@ -182,7 +182,7 @@ function _test(){
       const rows = parse_mrtable(
         "| c1xxxx | bb | cc |" + "\r\n" +
         "| -123 | 0 | e \\| e |" + "\n" +
-        "| 12 | dd | ee |" + "\n" +
+        "| 12 |  |    |" + "\n" +
         "| null | \"null\" | \"\" |" + "\n"
       );
       assertEq(rows.length, 4);
@@ -200,8 +200,8 @@ function _test(){
       });
       assertEq(lines[0], "c1xxxx,bb,cc");
       assertEq(lines[1], "-123,0,e | e");
-      assertEq(lines[2], "12,dd,ee");
-      assertEq(lines[3], "<null>,null,<empty>");
+      assertEq(lines[2], "12,<null>,<null>");
+      assertEq(lines[3], "null,null,<empty>");
     }
   ];
 

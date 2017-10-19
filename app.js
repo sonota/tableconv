@@ -255,11 +255,10 @@ class Mrtable {
   }
 
   static parseCol(col){
-    const NULL_STR = "null";
-    if( col === '"' + NULL_STR + '"' ){
-      return NULL_STR;
-    }else if( col === NULL_STR ){
+    if( col === "" ){
       return null;
+    }else if( col === '""' ){
+      return "";
     }else{
       return Mrtable.jsonDecode(col);
     }
@@ -292,15 +291,15 @@ class Mrtable {
 
   static serealizeCol(col){
     if( col == null ){
-      return "null";
-    }else if( col === "null" ){
-      return '"null"'
+      return "";
+    }else if( col === "" ){
+      return '""';
+    }else if( /\-+/.test(col) ){
+      return '"' + col + '"';
     }
 
     const ret = Mrtable.jsonEncode(col);
-    if( ret === "" ){
-      return '""';
-    }else if( ret.match(/^\s+/) || ret.match(/\s+$/) ){
+    if( ret.match(/^\s+/) || ret.match(/\s+$/) ){
       return '"' + ret + '"';
     }else{
       return ret.replace(/\|/g, "\\|");
