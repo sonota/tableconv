@@ -472,7 +472,7 @@ var AppM = Backbone.Model.extend({
 
   getNumCols: function(rows){
     var numCols = 0;
-    _(rows).each(function(cols){
+    rows.forEach(function(cols){
       numCols = Math.max(numCols, cols.length);
     });
     return numCols;
@@ -480,11 +480,11 @@ var AppM = Backbone.Model.extend({
 
   getMaxlens: function(headCols){
     var maxlens = [];
-    _(headCols).each(function(col, ci){
+    headCols.forEach(function(col, ci){
       maxlens[ci] = Math.max(maxlens[ci] || 0, strlen(col));
     });
-    _(this.bodyRows).each(function(cols){
-      _(cols).each(function(col, ci){
+    this.bodyRows.forEach(function(cols){
+      cols.forEach(function(col, ci){
         maxlens[ci] = Math.max(maxlens[ci] || 0, strlen(col || NULL_STR));
       });
     });
