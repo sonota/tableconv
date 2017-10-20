@@ -332,6 +332,10 @@ class Mrtable {
   }
 
   static generate(rows, headCols){
+    function cols2line(cols){
+      return "| " + cols.join(" | ") + " |";
+    }
+
     const unioned = [headCols].concat(rows);
 
     const numCols = headCols.length;
@@ -346,15 +350,15 @@ class Mrtable {
     const headCols2 = padded[0];
     const rows2 = padded.slice(1);
 
-    lines.push("| " + headCols2.join(" | ") + " |");
+    lines.push(cols2line(headCols2));
 
     const seps = _.range(0, numCols).map((ci)=>{
       return mkstr("-", maxlens[ci]);
     });
-    lines.push("| " + seps.join(" | ") + " |");
+    lines.push(cols2line(seps));
 
     rows2.forEach((cols)=>{
-      lines.push("| " + cols.join(" | ") + " |");
+      lines.push(cols2line(cols));
     });
     return lines.map(line => line + "\n").join("");
   }
