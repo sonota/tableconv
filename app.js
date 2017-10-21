@@ -437,23 +437,28 @@ var AppM = Backbone.Model.extend({
   },
 
   parse: function(){
+
+    function dispatch(me, text){
+      switch(me.get("inputType")){
+      case "mysql":
+        return parse_mysql(text);
+        break;
+      case "postgresql":
+        return parse_postgresql(text);
+        break;
+      case "mrtable":
+        return parse_mrtable(text);
+        break;
+      default:
+        var re = new RegExp(me.get("regexpPattern"));
+        return parse_regexp(text, { re: re });
+      }
+    }
+
     const me = this;
     var text = this.get("input");
 
-    switch(this.get("inputType")){
-    case "mysql":
-      this.rows = parse_mysql(text);
-      break;
-    case "postgresql":
-      this.rows = parse_postgresql(text);
-      break;
-    case "mrtable":
-      this.rows = parse_mrtable(text);
-      break;
-    default:
-      var re = new RegExp(me.get("regexpPattern"));
-      this.rows = parse_regexp(text, { re: re });
-    }
+    this.rows = dispatch(me, text);
 
     var bodyRows = this.rows;
     var numCols = this.getNumCols(this.rows);
