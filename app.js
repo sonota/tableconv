@@ -267,8 +267,7 @@ class Mrtable {
   static parse(text){
     var lines = text.split(/\r?\n/);
     if( lines.length > NUM_ROWS_MAX ){
-      alert("Too many rows");
-      return [];
+      throw new Error("Too many rows");
     }
 
     return lines.filter((line)=>{
@@ -368,8 +367,7 @@ class Mrtable {
 function parse_regexp(text, options){
   var lines = text.split("\n");
   if(lines.length > NUM_ROWS_MAX){
-    alert("Too many rows");
-    return [];
+    throw new Error("Too many rows");
   }
 
   var re = options.re;
@@ -391,8 +389,7 @@ function parse_regexp(text, options){
 function parse_mysql(text){
   var lines = text.split("\n");
   if(lines.length > NUM_ROWS_MAX){
-    alert("Too many rows");
-    return [];
+    throw new Error("Too many rows");
   }
 
   return _.chain(lines).filter(function(line){
@@ -412,8 +409,7 @@ function parse_mysql(text){
 function parse_postgresql(text){
   var lines = text.split("\n");
   if(lines.length > NUM_ROWS_MAX){
-    alert("Too many rows");
-    return [];
+    throw new Error("Too many rows");
   }
 
   return _.chain(lines).filter(function(line){
