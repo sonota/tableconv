@@ -373,6 +373,14 @@ function parse_regexp(text, options){
   }
 
   var re = options.re;
+  const source = re.toSource();
+  if(
+    source === "/(?:)/" // empty
+    || source === "/./"
+    ){
+    throw new Error("Invalid regexp pattern");
+  }
+
   return _.chain(lines).filter(function(line){
     return ! /^\s*$/.test(line);
   }).map(function(line){
@@ -458,7 +466,12 @@ var AppM = Backbone.Model.extend({
     const me = this;
     var text = this.get("input");
 
-    this.rows = dispatch(me, text);
+    try{
+      this.rows = dispatch(me, text);
+    }catch(e){
+      puts(e);
+      this.rows = [[]];
+    }
 
     var bodyRows = this.rows;
     var numCols = this.getNumCols(this.rows);
