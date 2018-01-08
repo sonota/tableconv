@@ -378,11 +378,11 @@ function parse_regexp(text, options){
     throw new Error("Invalid regexp pattern");
   }
 
-  return _.chain(lines).filter(function(line){
+  return lines.filter(function(line){
     return ! /^\s*$/.test(line);
   }).map(function(line){
     return line.split(re);
-  }).value();
+  });
 }
 
 function parse_mysql(text){
