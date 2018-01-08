@@ -378,9 +378,9 @@ function parse_regexp(text, options){
     throw new Error("Invalid regexp pattern");
   }
 
-  return lines.filter(function(line){
+  return lines.filter((line)=>{
     return ! /^\s*$/.test(line);
-  }).map(function(line){
+  }).map((line)=>{
     return line.split(re);
   });
 }
