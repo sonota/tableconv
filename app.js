@@ -599,7 +599,15 @@ var AppM = Backbone.Model.extend({
       tsv += this.toTsvRow(headCols) + "\n";
     }
 
-    tsv += this.bodyRows.map((cols)=>{
+    let bodyRows = this.bodyRows;
+    if( this.get("chkCustomNullStrOut") ){
+      const nullStr = this.get("customNullStrOut");
+      bodyRows = mapColWithCi(bodyRows, (col, ci)=>{
+        return col === null ? nullStr : col;
+      });
+    }
+
+    tsv += bodyRows.map((cols)=>{
       return me.toTsvRow(cols) + "\n";
     }).join("");
     return tsv;
@@ -667,8 +675,16 @@ var AppM = Backbone.Model.extend({
     var numCols = this.getNumCols(this.rows);
     var headCols = this.headColsCustom || this.headCols || this.headColsNumber;
     headCols = headCols.map((col)=>{ return me.modifyHeadCol(col); });
-    
-    return Mrtable.generate(this.bodyRows, headCols);
+
+    let bodyRows = this.bodyRows;
+    if( this.get("chkCustomNullStrOut") ){
+      const nullStr = this.get("customNullStrOut");
+      bodyRows = mapColWithCi(bodyRows, (col, ci)=>{
+        return col === null ? nullStr : col;
+      });
+    }
+
+    return Mrtable.generate(bodyRows, headCols);
   },
 
   toSqlInsert: function(){
@@ -752,6 +768,9 @@ var AppV = Backbone.View.extend({
         "chkCustomNullStrIn": this.$(".chk_custom_null_str_in").prop("checked"),
         "customNullStrIn": this.$(".custom_null_str_in").val(),
 
+        "chkCustomNullStrOut": this.$(".chk_custom_null_str_out").prop("checked"),
+        "customNullStrOut": this.$(".custom_null_str_out").val(),
+
         "colContentLengthMax": this.getColContentLengthMax()
       },
       { silent: true }
@@ -772,6 +791,9 @@ var AppV = Backbone.View.extend({
 
     "change .chk_custom_null_str_in": "onchange_chkCustomNullStrIn",
     "change .custom_null_str_in": "onchange_customNullStrIn",
+
+    "change .chk_custom_null_str_out": "onchange_chkCustomNullStrOut",
+    "change .custom_null_str_out": "onchange_customNullStrOut",
 
     "change .col_content_length_max": "onchange_colContentLengthMax"
   },
@@ -804,6 +826,10 @@ var AppV = Backbone.View.extend({
     this.$(".custom_null_str_in").prop(
       "disabled",
       ! this.model.get("chkCustomNullStrIn"));
+
+    this.$(".custom_null_str_out").prop(
+      "disabled",
+      ! this.model.get("chkCustomNullStrOut"));
 
     this.$(".col_content_length_max").val(this.model.get("colContentLengthMax"));
 
@@ -862,6 +888,18 @@ var AppV = Backbone.View.extend({
     this.model.set(
       "customNullStrIn",
       this.$(".custom_null_str_in").val());
+  },
+
+  onchange_chkCustomNullStrOut: function(){
+    this.model.set(
+      "chkCustomNullStrOut",
+      this.$(".chk_custom_null_str_out").prop("checked"));
+  },
+
+  onchange_customNullStrOut: function(){
+    this.model.set(
+      "customNullStrOut",
+      this.$(".custom_null_str_out").val());
   },
 
   onchange_colContentLengthMax: function(){
