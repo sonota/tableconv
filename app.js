@@ -571,7 +571,7 @@ var AppM = Backbone.Model.extend({
       tsv += this.toTsvRow(headCols) + "\n";
     }
 
-    tsv += _(this.bodyRows).map(function(cols){
+    tsv += this.bodyRows.map((cols)=>{
       return me.toTsvRow(cols) + "\n";
     }).join("");
     return tsv;
