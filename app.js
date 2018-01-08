@@ -362,6 +362,13 @@ class Mrtable {
   }
 }
 
+function mapColWithCi(rows, fn){
+  return rows.map((cols)=>{
+    return cols.map((col, ci)=>{
+      return fn(col, ci);
+    });
+  });
+}
 
 function parse_regexp(text, options){
   var lines = text.split("\n");
@@ -378,11 +385,20 @@ function parse_regexp(text, options){
     throw new Error("Invalid regexp pattern");
   }
 
-  return lines.filter((line)=>{
+  const rows = lines.filter((line)=>{
     return ! /^\s*$/.test(line);
   }).map((line)=>{
     return line.split(re);
   });
+
+  if("customNullStrIn" in options){
+    const nullStr = options.customNullStrIn
+    return mapColWithCi(rows, (col, ci)=>{
+      return col === nullStr ? null : col;
+    });
+  }else{
+    return rows;
+  }
 }
 
 function parse_mysql(text){
@@ -423,8 +439,17 @@ function parse_postgresql(text){
   }).value();
 }
 
-function parse_mrtable(text){
-  return Mrtable.parse(text);
+function parse_mrtable(text, options){
+  const rows = Mrtable.parse(text);
+
+  if("customNullStrIn" in options){
+    const nullStr = options.customNullStrIn;
+    return mapColWithCi(rows, (col, ci)=>{
+      return col === nullStr ? null : col;
+    });
+  }else{
+    return rows;
+  }
 }
 
 var AppM = Backbone.Model.extend({
@@ -443,6 +468,9 @@ var AppM = Backbone.Model.extend({
 
     function dispatch(me, text){
       const options = {};
+      if( me.get("chkCustomNullStrIn") ){
+        options.customNullStrIn = me.get("customNullStrIn");
+      }
 
       switch(me.get("inputType")){
       case "mysql":
@@ -452,7 +480,7 @@ var AppM = Backbone.Model.extend({
         return parse_postgresql(text);
         break;
       case "mrtable":
-        return parse_mrtable(text);
+        return parse_mrtable(text, options);
         break;
       default:
         options.re = new RegExp(me.get("regexpPattern"));
@@ -720,6 +748,10 @@ var AppV = Backbone.View.extend({
         "chkFirstRowHeader": this.$(".chk_first_row_header").prop("checked"),
         "input": this.$(".input").val(),
         "chkSnipLongCol": this.$(".chk_snip_long_col").prop("checked"),
+
+        "chkCustomNullStrIn": this.$(".chk_custom_null_str_in").prop("checked"),
+        "customNullStrIn": this.$(".custom_null_str_in").val(),
+
         "colContentLengthMax": this.getColContentLengthMax()
       },
       { silent: true }
@@ -737,6 +769,10 @@ var AppV = Backbone.View.extend({
     "change .chk_custom_header": "onchange_chkCustomHeader",
     "change .chk_first_row_header": "onchange_chkFirstRowHeader",
     "change .chk_snip_long_col": "onchange_chkSnipLongCol",
+
+    "change .chk_custom_null_str_in": "onchange_chkCustomNullStrIn",
+    "change .custom_null_str_in": "onchange_customNullStrIn",
+
     "change .col_content_length_max": "onchange_colContentLengthMax"
   },
 
@@ -764,6 +800,10 @@ var AppV = Backbone.View.extend({
     this.$(".col_content_length_max").prop(
       "disabled",
       ! this.model.get("chkSnipLongCol"));
+
+    this.$(".custom_null_str_in").prop(
+      "disabled",
+      ! this.model.get("chkCustomNullStrIn"));
 
     this.$(".col_content_length_max").val(this.model.get("colContentLengthMax"));
 
@@ -810,6 +850,18 @@ var AppV = Backbone.View.extend({
     this.model.set(
       "chkSnipLongCol",
       this.$(".chk_snip_long_col").prop("checked"));
+  },
+
+  onchange_chkCustomNullStrIn: function(){
+    this.model.set(
+      "chkCustomNullStrIn",
+      this.$(".chk_custom_null_str_in").prop("checked"));
+  },
+
+  onchange_customNullStrIn: function(){
+    this.model.set(
+      "customNullStrIn",
+      this.$(".custom_null_str_in").val());
   },
 
   onchange_colContentLengthMax: function(){
