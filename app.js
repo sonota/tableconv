@@ -295,14 +295,13 @@ class Mrtable {
       return '""';
     }
 
-    const ret = Mrtable.jsonEncode(col);
+    let ret = Mrtable.jsonEncode(col);
     if( ret.match(/^\s+/) || ret.match(/\s+$/)
         || /^\-+$/.test(ret)
       ){
-      return '"' + ret + '"';
-    }else{
-      return ret.replace(/\|/g, "\\|");
+      ret = '"' + ret + '"';
     }
+    return ret.replace(/\|/g, "\\|");
   }
 
   static colLen(col){
