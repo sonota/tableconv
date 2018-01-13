@@ -819,6 +819,10 @@ var AppV = Backbone.View.extend({
       "disabled",
       ! this.model.get("chkCustomHeader"));
 
+    this.$(".chk_first_row_header").prop(
+      "checked",
+      this.model.get("chkFirstRowHeader"));
+
     this.$(".col_content_length_max").prop(
       "disabled",
       ! this.model.get("chkSnipLongCol"));
