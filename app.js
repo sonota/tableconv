@@ -771,6 +771,8 @@ var AppV = Backbone.View.extend({
         "chkCustomNullStrOut": this.$(".chk_custom_null_str_out").prop("checked"),
         "customNullStrOut": this.$(".custom_null_str_out").val(),
 
+        "tableName": this.$(".table_name").val(),
+
         "colContentLengthMax": this.getColContentLengthMax()
       },
       { silent: true }
@@ -794,6 +796,8 @@ var AppV = Backbone.View.extend({
 
     "change .chk_custom_null_str_out": "onchange_chkCustomNullStrOut",
     "change .custom_null_str_out": "onchange_customNullStrOut",
+
+    "change .table_name": "onchange_tableName",
 
     "change .col_content_length_max": "onchange_colContentLengthMax"
   },
@@ -904,6 +908,12 @@ var AppV = Backbone.View.extend({
     this.model.set(
       "customNullStrOut",
       this.$(".custom_null_str_out").val());
+  },
+
+  onchange_tableName: function(){
+    this.model.set(
+      "tableName",
+      this.$(".table_name").val());
   },
 
   onchange_colContentLengthMax: function(){
