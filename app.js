@@ -735,7 +735,9 @@ var AppM = Backbone.Model.extend({
     });
     const bodyRows2 = padded.slice(1);
 
-    let s = "INSERT INTO {table}\n";
+    const tableName = me.get("tableName") || "{table}";
+
+    let s = "INSERT INTO " + tableName + "\n";
 
     s += "  (";
     s += headCols2.join(", ");
