@@ -183,7 +183,8 @@ function _test(){
         "| c1xxxx | bb | cc |" + "\r\n" +
         "| -123 | 0 | e \\| e |" + "\n" +
         "| 12 |  |    |" + "\n" +
-        "| null | \"null\" | \"\" |" + "\n"
+        "| null | \"null\" | \"\" |" + "\n",
+        {}
       );
       assertEq(rows.length, 4);
 
