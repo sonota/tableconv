@@ -211,7 +211,8 @@ function _test(){
       _t();
     }catch(e){
       puts("----------------");
-      puts(e.message);
+      puts(_t.name + " > " + e.message);
+      puts(e);
       numErrors++;
     }
   });
