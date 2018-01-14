@@ -92,18 +92,17 @@ const SPAN_CTRL_CD_MAP = {
 };
 
 
-var StrScan = (function(){
+class StrScan {
 
-  function StrScan(str){
+  constructor(str){
     this.str = str;
     this.rest = this.str;
     this.pos = 0;
     this.posBom = 0; // beginning of match
     this.m = null; // match result
   }
-  var __ = StrScan.prototype;
 
-  __.scan = function(re){
+  scan(re){
     this.posBom = this.pos;
 
     if( ! re.test(this.rest) ){
@@ -116,26 +115,24 @@ var StrScan = (function(){
     this.movePos(ret[0].length);
 
     return true;
-  };
+  }
 
   /**
    * EOS: end of string
    */
-  __.isEos = function(){
+  isEos(){
     return this.pos >= this.str.length;
-  };
+  }
 
-  __.substring = function(i0, i1){
+  substring(i0, i1){
     return this.str.substring(i0, i1);
-  };
+  }
 
-  __.movePos = function(delta){
+  movePos(delta){
     this.pos += delta;
     this.rest = this.str.substring(this.pos);
-  };
-
-  return StrScan;
-})();
+  }
+}
 
 
 var ColContent = {
