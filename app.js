@@ -177,7 +177,7 @@ var ColContent = {
   },
 
   _toHtml: function(tokens){
-    return _.map(tokens, function(token){
+    return tokens.map(function(token){
       if(token.type === 'space'){
         return mkstr(SPAN_WS, token.str.length);
       }else if(token.type === 'ctrl_cd'){
@@ -404,7 +404,7 @@ function parse_mysql(text){
     throw new Error("Too many rows");
   }
 
-  return _.chain(lines).filter(function(line){
+  return lines.filter(function(line){
     return ! ( /^\+/.test(line)
                || /^\s*$/.test(line)
              );
@@ -415,7 +415,7 @@ function parse_mysql(text){
     return cols.map(strip).map((x)=>{
       return x === 'NULL' ? null : x;
     });
-  }).value();
+  });
 }
 
 function parse_postgresql(text){
@@ -424,7 +424,7 @@ function parse_postgresql(text){
     throw new Error("Too many rows");
   }
 
-  return _.chain(lines).filter(function(line){
+  return lines.filter(function(line){
     return ! ( /^\-/.test(line)
                || /^\s*$/.test(line)
              );
@@ -433,7 +433,7 @@ function parse_postgresql(text){
     cols.shift();
     cols.pop();
     return cols.map(strip);
-  }).value();
+  });
 }
 
 function parse_mrtable(text, options){
@@ -564,7 +564,7 @@ var AppM = Backbone.Model.extend({
     json += ', "rows": [\n';
     json += this.bodyRows.map(function(cols, i){
       var obj = {};
-      _(cols).each(function(col, ci){
+      cols.forEach(function(col, ci){
         obj[headCols[ci]] = col;
       });
       return "  " + (i === 0 ? "" : "," ) + JSON.stringify(obj) + "\n";
@@ -651,10 +651,10 @@ var AppM = Backbone.Model.extend({
       }) + '</tr>';
     }
 
-    _(this.bodyRows).each(function(cols, ri){
+    this.bodyRows.forEach(function(cols, ri){
       h += '<tr>';
       h += '<th>' + (ri + 1) + '</th>';
-      _(cols).each(function(col){
+      cols.forEach(function(col){
         if( isNumber(col) ){
           h += '<td class="right">';
         }else{
