@@ -635,19 +635,19 @@ var AppM = Backbone.Model.extend({
     var h = "";
 
     h += '<tr><th>#</th>' + this.headColsNumber.map(function(col){
-      return '<th>'+col+'</th>';
+      return '<th>' + col + '</th>';
     }) + '</tr>';
 
     if( this.get("chkCustomHeader") ){
       h += '<tr><th>custom</th>' + this.headColsCustom.map(function(col){
-        return '<th>'+col+'</th>';
+        return '<th>' + col + '</th>';
       }) + '</tr>';
     }
 
     if( this.get("chkFirstRowHeader") ){
       const headCols = this.headCols.map((col)=>{ return me.modifyHeadCol(col); });
       h += '<tr><th>1st row</th>' + headCols.map(function(col){
-        return '<th>'+col+'</th>';
+        return '<th>' + col + '</th>';
       }) + '</tr>';
     }
 
