@@ -177,7 +177,7 @@ var ColContent = {
   },
 
   _toHtml: function(tokens){
-    return tokens.map(function(token){
+    return tokens.map((token)=>{
       if(token.type === 'space'){
         return mkstr(SPAN_WS, token.str.length);
       }else if(token.type === 'ctrl_cd'){
@@ -404,11 +404,11 @@ function parse_mysql(text){
     throw new Error("Too many rows");
   }
 
-  return lines.filter(function(line){
+  return lines.filter((line)=>{
     return ! ( /^\+/.test(line)
                || /^\s*$/.test(line)
              );
-  }).map(function(line){
+  }).map((line)=>{
     var cols = (" " + line + " ").split(" | ");
     cols.shift();
     cols.pop();
@@ -424,11 +424,11 @@ function parse_postgresql(text){
     throw new Error("Too many rows");
   }
 
-  return lines.filter(function(line){
+  return lines.filter((line)=>{
     return ! ( /^\-/.test(line)
                || /^\s*$/.test(line)
              );
-  }).map(function(line){
+  }).map((line)=>{
     var cols = (" |" + line + " | ").split(" | ");
     cols.shift();
     cols.pop();
@@ -564,7 +564,7 @@ var AppM = Backbone.Model.extend({
     json += ', "rows": [\n';
     json += this.bodyRows.map(function(cols, i){
       var obj = {};
-      cols.forEach(function(col, ci){
+      cols.forEach((col, ci)=>{
         obj[headCols[ci]] = col;
       });
       return "  " + (i === 0 ? "" : "," ) + JSON.stringify(obj) + "\n";
@@ -651,10 +651,10 @@ var AppM = Backbone.Model.extend({
       }) + '</tr>';
     }
 
-    this.bodyRows.forEach(function(cols, ri){
+    this.bodyRows.forEach((cols, ri)=>{
       h += '<tr>';
       h += '<th>' + (ri + 1) + '</th>';
-      cols.forEach(function(col){
+      cols.forEach((col)=>{
         if( isNumber(col) ){
           h += '<td class="right">';
         }else{
@@ -740,7 +740,7 @@ var AppM = Backbone.Model.extend({
     s += headCols2.join(", ");
     s += ")\nVALUES\n";
 
-    s += bodyRows2.map(function(cols, ri){
+    s += bodyRows2.map((cols, ri)=>{
       return ((ri === 0) ? "  " : " ,")
         + "(" + cols.join(", ") + ")\n";
     }).join("");
