@@ -670,7 +670,6 @@ var AppM = Backbone.Model.extend({
 
   toMrtable: function(){
     const me = this;
-    var numCols = this.getNumCols(this.rows);
     var headCols = this.headColsCustom || this.headCols || this.headColsNumber;
     headCols = headCols.map((col)=>{ return me.modifyHeadCol(col); });
 
