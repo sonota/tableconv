@@ -46,17 +46,17 @@ function mkstr(s, n){
 }
 
 function padRight(s, n){
-  var pad = n - strlen(s);
+  const pad = n - strlen(s);
   return s + mkstr(" ", pad);
 }
 
 function padLeft(s, n){
-  var pad = n - strlen(s);
+  const pad = n - strlen(s);
   return mkstr(" ", pad) + s;
 }
 
 function mapChars(str, fn){
-  var chars = [];
+  const chars = [];
   for(let i=0,len=str.length; i<len; i++){
     chars.push(fn(str.charAt(i), i));
   }
@@ -143,9 +143,9 @@ class ColContent {
       return { type: type, str: str };
     }
 
-    var ts = [];
+    const ts = [];
     var posPrevEom = 0; // previous end of match
-    var ss = new StrScan(str);
+    const ss = new StrScan(str);
 
     /**
      * \u0020: normal white space
@@ -192,7 +192,7 @@ class ColContent {
   }
 
   static toHtml(val){
-    var tokens = this._tokenize(val);
+    const tokens = this._tokenize(val);
     return this._toHtml(tokens);
   }
 };
@@ -263,7 +263,7 @@ class Mrtable {
   }
 
   static parse(text){
-    var lines = text.split(/\r?\n/);
+    const lines = text.split(/\r?\n/);
     if( lines.length > NUM_ROWS_MAX ){
       throw new Error("Too many rows");
     }
@@ -369,12 +369,12 @@ function mapColWithCi(rows, fn){
 }
 
 function parse_regexp(text, options){
-  var lines = text.split("\n");
+  const lines = text.split("\n");
   if(lines.length > NUM_ROWS_MAX){
     throw new Error("Too many rows");
   }
 
-  var re = options.re;
+  const re = options.re;
   const source = re.toSource();
   if(
     source === "/(?:)/" // empty
@@ -400,7 +400,7 @@ function parse_regexp(text, options){
 }
 
 function parse_mysql(text){
-  var lines = text.split("\n");
+  const lines = text.split("\n");
   if(lines.length > NUM_ROWS_MAX){
     throw new Error("Too many rows");
   }
@@ -420,7 +420,7 @@ function parse_mysql(text){
 }
 
 function parse_postgresql(text){
-  var lines = text.split("\n");
+  const lines = text.split("\n");
   if(lines.length > NUM_ROWS_MAX){
     throw new Error("Too many rows");
   }
@@ -450,7 +450,7 @@ function parse_mrtable(text, options){
   }
 }
 
-var AppM = Backbone.Model.extend({
+const AppM = Backbone.Model.extend({
   defaults: {
     input: "",
     rows: [],
@@ -487,7 +487,7 @@ var AppM = Backbone.Model.extend({
     }
 
     const me = this;
-    var text = this.get("input");
+    const text = this.get("input");
 
     try{
       this.rows = dispatch(me, text);
@@ -497,7 +497,7 @@ var AppM = Backbone.Model.extend({
     }
 
     var bodyRows = this.rows;
-    var numCols = this.getNumCols(this.rows);
+    const numCols = this.getNumCols(this.rows);
 
     this.headColsNumber = _.range(0, numCols).map(function(ci){
       return "" + (ci + 1);
@@ -524,7 +524,7 @@ var AppM = Backbone.Model.extend({
   },
 
   getMaxlens: function(headCols){
-    var maxlens = [];
+    const maxlens = [];
     headCols.forEach(function(col, ci){
       maxlens[ci] = Math.max(maxlens[ci] || 0, strlen(col));
     });
@@ -612,7 +612,7 @@ var AppM = Backbone.Model.extend({
   },
 
   _colContentToHtml: function(content){
-    var max = this.get("colContentLengthMax");
+    const max = this.get("colContentLengthMax");
     if( content == null ){
       return mkSpanHtml("(null)", "col_null");
     }else if( content === "" ){
@@ -620,9 +620,9 @@ var AppM = Backbone.Model.extend({
     }else if( this.get("chkSnipLongCol")
         && content.length > max
       ){
-      var half = Math.floor( (max - SNIP_STR.length) / 2 );
-      var head = content.substring(0, half);
-      var tail = content.substring(content.length - half, content.length);
+      const half = Math.floor( (max - SNIP_STR.length) / 2 );
+      const head = content.substring(0, half);
+      const tail = content.substring(content.length - half, content.length);
       return ColContent.toHtml(head)
           + mkSpanHtml(SNIP_STR, "col_snip")
           + ColContent.toHtml(tail);
@@ -749,7 +749,7 @@ var AppM = Backbone.Model.extend({
   }
 });
 
-var AppV = Backbone.View.extend({
+const AppV = Backbone.View.extend({
   initialize: function(){
     this.listenTo(this.model, "change", _.debounce(this.render, 200));
 
@@ -931,7 +931,7 @@ var AppV = Backbone.View.extend({
   },
 
   getColContentLengthMax: function(){
-    var n = parseInt(this.$(".col_content_length_max").val(), 10);
+    const n = parseInt(this.$(".col_content_length_max").val(), 10);
     if(isNaN(n)){
       return COL_CONTENT_LENGTH_MAX_DEFAULT;
     }
@@ -943,8 +943,8 @@ var AppV = Backbone.View.extend({
 });
 
 $(function(){
-  var appM = new AppM();
-  var appV = new AppV({
+  const appM = new AppM();
+  const appV = new AppV({
     model: appM,
     el: $("body")[0]
   });
