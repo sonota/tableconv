@@ -294,7 +294,7 @@ class Mrtable {
     }
 
     let ret = Mrtable.jsonEncode(col);
-    if( ret.match(/^\s+/) || ret.match(/\s+$/)
+    if( /^\s+/.test(ret) || /\s+$/.test(ret)
         || /^\-+$/.test(ret)
       ){
       ret = '"' + ret + '"';
