@@ -135,8 +135,9 @@ class StrScan {
 }
 
 
-var ColContent = {
-  _tokenize: function(str){
+class ColContent {
+
+  static _tokenize(str){
     // create token
     function _t(type, str){
       return { type: type, str: str };
@@ -174,9 +175,9 @@ var ColContent = {
     }
 
     return ts;
-  },
+  }
 
-  _toHtml: function(tokens){
+  static _toHtml(tokens){
     return tokens.map((token)=>{
       if(token.type === 'space'){
         return mkstr(SPAN_WS, token.str.length);
@@ -188,9 +189,9 @@ var ColContent = {
         return _.escape(token.str);
       }
     }).join("");
-  },
+  }
 
-  toHtml: function(val){
+  static toHtml(val){
     var tokens = this._tokenize(val);
     return this._toHtml(tokens);
   }
