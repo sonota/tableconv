@@ -110,7 +110,7 @@ class StrScan {
       return null;
     }
 
-    var ret = this.rest.match(re);
+    const ret = this.rest.match(re);
     this.m = ret;
     this.movePos(ret[0].length);
 
@@ -564,7 +564,7 @@ const AppM = Backbone.Model.extend({
     var json = '{"header":' + JSON.stringify(headCols);
     json += ', "rows": [\n';
     json += this.bodyRows.map(function(cols, i){
-      var obj = {};
+      const obj = {};
       cols.forEach((col, ci)=>{
         obj[headCols[ci]] = col;
       });
