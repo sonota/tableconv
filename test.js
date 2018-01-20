@@ -203,6 +203,29 @@ function _test(){
       assertEq(lines[1], "-123,0,e | e");
       assertEq(lines[2], "12,<null>,<null>");
       assertEq(lines[3], "null,null,<empty>");
+    },
+
+    function test_parse_dbunitXml(){
+      const rows = parse_dbunitXml(
+          '<tbl aa="12ab" bb="1&quot;2" />\n'
+        + '<tbl           bb="234" />\n'
+      );
+      assertEq(rows.length, 3);
+
+      const lines = rows.map((cols)=>{
+        return cols.map(col=>{
+          if (col == null) {
+            return "<null>";
+          } else if (col === "") {
+            return "<empty>";
+          } else {
+            return col;
+          }
+        }).join(",");
+      });
+      assertEq(lines[0], "aa,bb");
+      assertEq(lines[1], "12ab,1\"2");
+      assertEq(lines[2], "<null>,234");
     }
   ];
 
