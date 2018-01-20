@@ -23,7 +23,7 @@ function strlen(s){
     return 0;
   }
   if( includeZenkaku(s) ){
-    var len = 0;
+    let len = 0;
     for(let i=0,slen=s.length; i<slen; i++){
       if( includeZenkaku(s.charAt(i)) ){
         len += 2;
@@ -38,7 +38,7 @@ function strlen(s){
 }
 
 function mkstr(s, n){
-  var ret = "";
+  let ret = "";
   for(let i=0; i<n; i++){
     ret += s;
   }
@@ -144,7 +144,7 @@ class ColContent {
     }
 
     const ts = [];
-    var posPrevEom = 0; // previous end of match
+    let posPrevEom = 0; // previous end of match
     const ss = new StrScan(str);
 
     /**
@@ -410,7 +410,7 @@ function parse_mysql(text){
                || /^\s*$/.test(line)
              );
   }).map((line)=>{
-    var cols = (" " + line + " ").split(" | ");
+    let cols = (" " + line + " ").split(" | ");
     cols.shift();
     cols.pop();
     return cols.map(strip).map((x)=>{
@@ -430,7 +430,7 @@ function parse_postgresql(text){
                || /^\s*$/.test(line)
              );
   }).map((line)=>{
-    var cols = (" |" + line + " | ").split(" | ");
+    let cols = (" |" + line + " | ").split(" | ");
     cols.shift();
     cols.pop();
     return cols.map(strip);
@@ -496,7 +496,7 @@ const AppM = Backbone.Model.extend({
       this.rows = [[]];
     }
 
-    var bodyRows = this.rows;
+    let bodyRows = this.rows;
     const numCols = this.getNumCols(this.rows);
 
     this.headColsNumber = _.range(0, numCols).map(function(ci){
@@ -516,7 +516,7 @@ const AppM = Backbone.Model.extend({
   },
 
   getNumCols: function(rows){
-    var numCols = 0;
+    let numCols = 0;
     rows.forEach(function(cols){
       numCols = Math.max(numCols, cols.length);
     });
@@ -543,10 +543,10 @@ const AppM = Backbone.Model.extend({
 
   toJsonArray: function(){
     const me = this;
-    var headCols = this.headColsCustom || this.headCols || this.headColsNumber;
+    let headCols = this.headColsCustom || this.headCols || this.headColsNumber;
     headCols = headCols.map((col)=>{ return me.modifyHeadCol(col); });
 
-    var json = '{"header":' + JSON.stringify(headCols);
+    let json = '{"header":' + JSON.stringify(headCols);
     json += ', "rows": [\n';
     json += this.bodyRows.map(function(cols, i){
       return "  " + (i === 0 ? "" : "," ) + JSON.stringify(cols) + "\n";
@@ -558,10 +558,10 @@ const AppM = Backbone.Model.extend({
 
   toJsonObject: function(){
     const me = this;
-    var headCols = this.headColsCustom || this.headCols || this.headColsNumber;
+    let headCols = this.headColsCustom || this.headCols || this.headColsNumber;
     headCols = headCols.map((col)=>{ return me.modifyHeadCol(col); });
 
-    var json = '{"header":' + JSON.stringify(headCols);
+    let json = '{"header":' + JSON.stringify(headCols);
     json += ', "rows": [\n';
     json += this.bodyRows.map(function(cols, i){
       const obj = {};
@@ -582,7 +582,7 @@ const AppM = Backbone.Model.extend({
 
   toTsv: function(){
     const me = this;
-    var tsv = "";
+    let tsv = "";
 
     if( this.get("chkColNumber") ){
       tsv += this.toTsvRow(this.headColsNumber) + "\n";
@@ -633,7 +633,7 @@ const AppM = Backbone.Model.extend({
 
   toHtmlTable: function(){
     const me = this;
-    var h = "";
+    let h = "";
 
     h += '<tr><th>#</th>' + this.headColsNumber.map(function(col){
       return '<th>' + col + '</th>';
@@ -670,7 +670,7 @@ const AppM = Backbone.Model.extend({
 
   toMrtable: function(){
     const me = this;
-    var headCols = this.headColsCustom || this.headCols || this.headColsNumber;
+    let headCols = this.headColsCustom || this.headCols || this.headColsNumber;
     headCols = headCols.map((col)=>{ return me.modifyHeadCol(col); });
 
     let bodyRows = this.bodyRows;
