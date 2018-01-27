@@ -86,6 +86,8 @@ const SPAN_WS = mkSpanHtml(" ", "col_space");
 
 const SPAN_CTRL_CD_MAP = {
   "\\": mkSpanHtml("\\\\", "col_ctrl_cd"),
+  "\b": mkSpanHtml("\\b", "col_ctrl_cd"),
+  "\f": mkSpanHtml("\\f", "col_ctrl_cd"),
   "\r": mkSpanHtml("\\r", "col_ctrl_cd"),
   "\n": mkSpanHtml("\\n", "col_ctrl_cd"),
   "\t": mkSpanHtml("\\t", "col_ctrl_cd")
@@ -158,7 +160,7 @@ class ColContent {
         }
         ts.push( _t("space", ss.m[0]) );
         posPrevEom = ss.pos;
-      }else if( ss.scan(/^[\t\r\n\\]/) ){
+      }else if( ss.scan(/^[\b\f\t\r\n\\]/) ){
         if( posPrevEom < ss.posBom ){
           ts.push( _t("plain", ss.substring(posPrevEom, ss.posBom)) );
         }
