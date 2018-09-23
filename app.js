@@ -136,6 +136,95 @@ class StrScan {
   }
 }
 
+/**
+ * Hyperscript-like builder
+ */
+class TreeBuilder {
+
+  static splitClass(str){
+    let head;
+    let tail;
+
+    if(str.indexOf(".") >=1 ){
+      const m = str.match(/^(.+?)\.(.+)/);
+      head = m[1];
+      tail = m[2].replace(/\./g, " ");
+    }else{
+      head = str;
+    }
+
+    return {
+      head: head
+      ,tail: tail
+    }
+  }
+
+  static _build(tag, attrs, ...kids){
+    let tagName = null;
+    let idClass = null;
+    let id = null;
+    let classNames = null;
+
+    if(tag.indexOf("#") >=1 ){
+      const m = tag.match(/^(.+?)#(.+)/);
+      tagName = m[1];
+      idClass = m[2];
+
+      if(idClass.indexOf(".") >=1 ){
+        const ret = this.splitClass(idClass);
+        id = ret.head;
+        classNames = ret.tail;
+      }else{
+        tagName = tag;
+      }
+    }else{
+      if(tag.indexOf(".") >=1 ){
+        const ret = this.splitClass(tag);
+        tagName = ret.head;
+        classNames = ret.tail;
+      }else{
+        tagName = tag;
+      }
+    }
+
+    const $el = $(`<${tagName}></${tagName}>`);
+    if(id){
+      $el.attr("id", id);
+    }
+    if(classNames){
+      $el.addClass(classNames);
+    }
+
+    for(let [k, v] of Object.entries(attrs)){
+      if(k === 'onclick'){
+        $el.on("click", v);
+      }else if(k === '_html'){
+        $el.html(v);
+      }else{
+        $el.attr(k, v);
+      }
+    }
+    
+    kids.forEach((kid)=>{
+      if(typeof kid === "string"){
+        $el.append(kid);
+      }else if(Array.isArray(kid)){
+        kid.forEach((el)=>{
+          $el.append(el);
+        });
+      }else{
+        $el.append(kid);
+      }
+    });
+
+    return $el;
+  }
+
+  static build(fn){
+    return fn(this._build.bind(this));
+  }
+}
+
 
 class ColContent {
 
@@ -644,39 +733,40 @@ const AppM = Backbone.Model.extend({
 
   toHtmlTable: function(){
     const me = this;
-    let h = "";
 
-    h += '<tr><th>#</th>' + this.headColsNumber.map(function(col){
-      return '<th>' + col + '</th>';
-    }) + '</tr>';
-
-    if( this.get("chkCustomHeader") ){
-      h += '<tr><th>custom</th>' + this.headColsCustom.map(function(col){
-        return '<th>' + col + '</th>';
-      }) + '</tr>';
-    }
-
-    if( this.get("chkFirstRowHeader") ){
-      const headCols = this.headCols.map((col)=>{ return me.modifyHeadCol(col); });
-      h += '<tr><th>1st row</th>' + headCols.map(function(col){
-        return '<th>' + col + '</th>';
-      }) + '</tr>';
-    }
-
-    this.bodyRows.forEach((cols, ri)=>{
-      h += '<tr>';
-      h += '<th>' + (ri + 1) + '</th>';
-      cols.forEach((col)=>{
-        if( isNumber(col) ){
-          h += '<td class="right">';
-        }else{
-          h += '<td>';
-        }
-        h += me._colContentToHtml(col) + '</td>';
-      });
-      h += '</tr>';
-    });
-    return h;
+    return TreeBuilder.build(h =>
+      h("table", {}, null
+      , h("tr", {}
+        , h("th", {}, "#")
+        , this.headColsNumber.map(cn => h("th", {}, cn))
+        )
+      , this.get("chkCustomHeader")
+        ? h("tr", {}
+          , h("th", {}, "custom")
+          , this.headColsCustom.map(col => h("th", {}, col))
+          )
+        : null
+      , this.get("chkFirstRowHeader")
+        ? h("tr", {}
+          , h("th", {}, "1st row")
+          , this.headCols.map((col)=>
+              h("th", {}, me.modifyHeadCol(col))
+            )
+          )
+        : null
+      , this.bodyRows.map((cols, ri)=>
+          h("tr", {}
+          , h("th", {}, `${ri + 1}`)
+          , cols.map(col =>{
+              const className = isNumber(col) ? ".right" : ""
+              return h("td" + className, {
+                _html: me._colContentToHtml(col)
+              });
+            })
+          )
+        )
+      )
+    );
   },
 
   toMrtable: function(){
@@ -825,7 +915,7 @@ const AppV = Backbone.View.extend({
     this.$(".output_tsv").val(this.model.toTsv());
     this.$(".output_mrtable").val(this.model.toMrtable());
     this.$(".output_sql_insert").val(this.model.toSqlInsert());
-    this.$(".html_table").html(this.model.toHtmlTable());
+    this.$(".html_table").empty().append(this.model.toHtmlTable());
 
     this.$(".regexp_pattern").prop(
       "disabled",
