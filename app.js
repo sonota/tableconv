@@ -540,7 +540,16 @@ const AppM = Backbone.Model.extend({
 
   // for customization
   modifyHeadCol: function(col){
-    return col;
+    if(this.get("chkOmitTableName")){
+      const i = col.indexOf(".");
+      if(i >= 1){
+        return col.substring(i + 1);
+      }else{
+        return col;
+      }
+    }else{
+      return col;
+    }
   },
 
   toJsonArray: function(){
@@ -763,6 +772,7 @@ const AppV = Backbone.View.extend({
         "customHeader": this.getCustomHeader(),
         "chkCustomHeader": this.$(".chk_custom_header").prop("checked"),
         "chkFirstRowHeader": this.$(".chk_first_row_header").prop("checked"),
+        "chkOmitTableName": this.$(".chk_omit_table_name").prop("checked"),
         "input": this.$(".input").val(),
         "chkSnipLongCol": this.$(".chk_snip_long_col").prop("checked"),
 
@@ -790,6 +800,7 @@ const AppV = Backbone.View.extend({
     "input .custom_header": "oninput_customHeader",
     "change .chk_custom_header": "onchange_chkCustomHeader",
     "change .chk_first_row_header": "onchange_chkFirstRowHeader",
+    "change .chk_omit_table_name": "onchange_chkOmitTableName",
     "change .chk_snip_long_col": "onchange_chkSnipLongCol",
 
     "change .chk_custom_null_str_in": "onchange_chkCustomNullStrIn",
@@ -827,6 +838,10 @@ const AppV = Backbone.View.extend({
     this.$(".chk_first_row_header").prop(
       "checked",
       this.model.get("chkFirstRowHeader"));
+
+    this.$(".chk_omit_table_name").prop(
+      "checked",
+      this.model.get("chkOmitTableName"));
 
     this.$(".col_content_length_max").prop(
       "disabled",
@@ -879,6 +894,12 @@ const AppV = Backbone.View.extend({
     this.model.set(
       "chkFirstRowHeader",
       this.$(".chk_first_row_header").prop("checked"));
+  },
+
+  onchange_chkOmitTableName: function(){
+    this.model.set(
+      "chkOmitTableName",
+      this.$(".chk_omit_table_name").prop("checked"));
   },
 
   onchange_chkSnipLongCol: function(){
