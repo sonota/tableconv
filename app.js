@@ -452,11 +452,45 @@ function parse_mrtable(text, options){
   }
 }
 
+function parse_dbunitXml(text){
+  const parser = new DOMParser();
+  const dom = parser.parseFromString(
+    '<?xml version="1.0" encoding="UTF-8" ?><dataset>'
+      + text + '</dataset>',
+    'text/xml');
+
+  const els = Array.from(dom.querySelector("dataset").childNodes).filter((cn)=>{
+    return cn.nodeType === Node.ELEMENT_NODE;
+  });
+
+  // const tableName = els[0].tagName;
+
+  const nameSet = new Set();
+  const colMaps = els.map((el)=>{
+    const colMap = {};
+    Array.from(el.attributes).forEach((attr)=>{
+      nameSet.add(attr.name);
+      colMap[attr.name] = attr.value;
+    });
+    return colMap;
+  });
+
+  const names = Array.from(nameSet);
+
+  const bodyRows = colMaps.map((colMap)=>{
+    return names.map((name)=>{
+      return (name in colMap) ? colMap[name] : null;
+    });
+  });
+
+  return [names].concat(bodyRows);
+}
+
 const AppM = Backbone.Model.extend({
   defaults: {
     input: "",
     rows: [],
-    inputType: null, // regexp | mysql | postgresql | mrtable
+    inputType: null, // regexp | mysql | postgresql | mrtable | dbunit_xml
     regexpPattern: "\t",
     chkColNumber: false,
     customHeader: "",
@@ -481,6 +515,9 @@ const AppM = Backbone.Model.extend({
         break;
       case "mrtable":
         return parse_mrtable(text, options);
+        break;
+      case "dbunit_xml":
+        return parse_dbunitXml(text);
         break;
       default:
         options.re = new RegExp(me.get("regexpPattern"));
