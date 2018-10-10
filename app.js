@@ -452,11 +452,45 @@ function parse_mrtable(text, options){
   }
 }
 
+function parse_dbunitXml(text){
+  const parser = new DOMParser();
+  const dom = parser.parseFromString(
+    '<?xml version="1.0" encoding="UTF-8" ?><dataset>'
+      + text + '</dataset>',
+    'text/xml');
+
+  const els = Array.from(dom.querySelector("dataset").childNodes).filter((cn)=>{
+    return cn.nodeType === Node.ELEMENT_NODE;
+  });
+
+  // const tableName = els[0].tagName;
+
+  const nameSet = new Set();
+  const colMaps = els.map((el)=>{
+    const colMap = {};
+    Array.from(el.attributes).forEach((attr)=>{
+      nameSet.add(attr.name);
+      colMap[attr.name] = attr.value;
+    });
+    return colMap;
+  });
+
+  const names = Array.from(nameSet);
+
+  const bodyRows = colMaps.map((colMap)=>{
+    return names.map((name)=>{
+      return (name in colMap) ? colMap[name] : null;
+    });
+  });
+
+  return [names].concat(bodyRows);
+}
+
 const AppM = Backbone.Model.extend({
   defaults: {
     input: "",
     rows: [],
-    inputType: null, // regexp | mysql | postgresql | mrtable
+    inputType: null, // regexp | mysql | postgresql | mrtable | dbunit_xml
     regexpPattern: "\t",
     chkColNumber: false,
     customHeader: "",
@@ -481,6 +515,9 @@ const AppM = Backbone.Model.extend({
         break;
       case "mrtable":
         return parse_mrtable(text, options);
+        break;
+      case "dbunit_xml":
+        return parse_dbunitXml(text);
         break;
       default:
         options.re = new RegExp(me.get("regexpPattern"));
@@ -757,6 +794,56 @@ const AppM = Backbone.Model.extend({
     }).join("");
 
     return s + ";\n";
+  },
+
+  toDbunitXml: function(){
+    function convertCol(headCol, col){
+      if(col == null){
+        return "";
+      }
+      return headCol + '="' + _.escape(col) + '"';
+    }
+
+    function calcMaxlens(rows){
+      const maxlens = [];
+      const numCols = rows[0].length;
+      for( let ci=0; ci<numCols; ci++ ){
+        const colsAtCi = [];
+        rows.forEach((cols)=>{
+          colsAtCi.push(cols[ci]);
+        });
+        maxlens[ci] = Math.max.apply(null, colsAtCi.map(strlen));
+      }
+      return maxlens;
+    }
+
+    const me = this;
+    let headCols = this.headColsCustom || this.headCols || this.headColsNumber;
+    headCols = headCols.map((col)=>{ return me.modifyHeadCol(col); });
+
+    const serealized = mapColWithCi(this.bodyRows, (col, ci)=>{
+      return convertCol(headCols[ci], col);
+    });
+
+    const maxlens = calcMaxlens(serealized);
+
+    const padded = mapColWithCi(serealized, (col, ci)=>{
+      return padRight(col, maxlens[ci]);
+    });
+
+    const tableName = me.get("tableName") || "{table}";
+
+    let s = '';
+
+    padded.forEach((cols)=>{
+      s += '<' + tableName;
+      cols.forEach((col, ci)=>{
+        s += " " + col;
+      });
+      s += " />\n";
+    });
+
+    return s;
   }
 });
 
@@ -825,6 +912,7 @@ const AppV = Backbone.View.extend({
     this.$(".output_tsv").val(this.model.toTsv());
     this.$(".output_mrtable").val(this.model.toMrtable());
     this.$(".output_sql_insert").val(this.model.toSqlInsert());
+    this.$(".output_dbunit_xml").val(this.model.toDbunitXml());
     this.$(".html_table").html(this.model.toHtmlTable());
 
     this.$(".regexp_pattern").prop(
