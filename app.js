@@ -844,6 +844,31 @@ const AppM = Backbone.Model.extend({
     });
 
     return s;
+  },
+
+  toRDataFrame: function(){
+    function convertCol(col){
+      if( col == null ){
+        return "NA";
+      }else{
+        return '"' + col + '"';
+      }
+    }
+    const me = this;
+    let headCols = this.headColsCustom || this.headCols || this.headColsNumber;
+    headCols = headCols.map((col)=>{ return me.modifyHeadCol(col); });
+
+    const serealized = mapColWithCi(this.bodyRows, (col, ci)=>{
+      return convertCol(col);
+    });
+
+    let s = "data.frame(\n  "
+    s += headCols.map((hcol, ci) => {
+      let xs = serealized.map(cols => cols[ci]);
+      return `${hcol} = as.numeric( c(${ xs.join(", ") }) )\n`;
+    }).join("  ,");
+    s += ")";
+    return s;
   }
 });
 
@@ -913,6 +938,7 @@ const AppV = Backbone.View.extend({
     this.$(".output_mrtable").val(this.model.toMrtable());
     this.$(".output_sql_insert").val(this.model.toSqlInsert());
     this.$(".output_dbunit_xml").val(this.model.toDbunitXml());
+    this.$(".output_r_data_frame").val(this.model.toRDataFrame());
     this.$(".html_table").html(this.model.toHtmlTable());
 
     this.$(".regexp_pattern").prop(
