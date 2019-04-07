@@ -102,6 +102,15 @@ td.right {
   border-radius: 0.3rem;
 }
 
+.label_highlight {
+  display: inline-block;
+  padding: 0.2rem 0.1rem;
+  margin: 0.2rem 0.1rem;
+  border-radius: 0.2rem;
+}
+.label_highlight:hover {
+  background: #e4e4e4;
+}
   </style>
 
   <script type="text/javascript" src="js_ext/jquery.js"></script>
@@ -116,20 +125,20 @@ td.right {
 <textarea class="input"></textarea>
 
 <br />
-<label>
+<label class="label_highlight">
   <input type="radio" name="input_type" value="regexp" /> regexp
 </label>
 <input type="text" class="regexp_pattern" name="regexp_pattern" value="\t" />
-<label>
+<label class="label_highlight">
   <input type="radio" name="input_type" value="mysql" /> MySQL
 </label>
-<label>
+<label class="label_highlight">
   <input type="radio" name="input_type" value="postgresql" /> PostgreSQL
 </label>
-<label>
+<label class="label_highlight">
   <input type="radio" name="input_type" value="mrtable" /> Mrtable
 </label>
-<label>
+<label class="label_highlight">
   <input type="radio" name="input_type" value="dbunit_xml" /> DbUnit XML
 </label>
 
@@ -146,12 +155,12 @@ td.right {
 <input type="text" class="custom_header" name="custom_header"
        value="" style="width: 70%;" />
 <br />
-<label>
+<label class="label_highlight">
   <input type="checkbox" class="chk_first_row_header" />
   first line is header
 </label>
 /
-<label>
+<label class="label_highlight">
   <input type="checkbox" class="chk_omit_table_name" />
   omit table name
 </label>
@@ -174,7 +183,7 @@ table name: <input type="text" class="table_name" />
 
 <h1>Preview</h1>
 
-<label>
+<label class="label_highlight">
   <input type="checkbox" class="chk_snip_long_col"  />
   snip long column
   <input type="text" class="col_content_length_max" name="col_content_length_max" value="64" />
