@@ -179,13 +179,17 @@ class ColContent {
     return ts;
   }
 
-  static _toHtml(tokens){
+  static _toHtml(tokens, wrapOnLf){
     return tokens.map((token)=>{
       if(token.type === 'space'){
         return mkstr(SPAN_WS, token.str.length);
       }else if(token.type === 'ctrl_cd'){
         return mapChars(token.str, function(c, i){
-          return SPAN_CTRL_CD_MAP[c];
+          if( wrapOnLf && c === "\n" ){
+            return SPAN_CTRL_CD_MAP[c] + "\n";
+          }else {
+            return SPAN_CTRL_CD_MAP[c];
+          }
         }).join("");
       }else{
         return _.escape(token.str);
@@ -193,9 +197,9 @@ class ColContent {
     }).join("");
   }
 
-  static toHtml(val){
+  static toHtml(val, wrapOnLf){
     const tokens = this._tokenize(val);
-    return this._toHtml(tokens);
+    return this._toHtml(tokens, wrapOnLf);
   }
 };
 
@@ -495,7 +499,8 @@ const AppM = Backbone.Model.extend({
     chkColNumber: false,
     customHeader: "",
     chkSnipLongCol: false,
-    colContentLengthMax: COL_CONTENT_LENGTH_MAX_DEFAULT
+    colContentLengthMax: COL_CONTENT_LENGTH_MAX_DEFAULT,
+    chkWrapOnLf: false
   },
 
   parse: function(){
@@ -661,6 +666,8 @@ const AppM = Backbone.Model.extend({
 
   _colContentToHtml: function(content){
     const max = this.get("colContentLengthMax");
+    const wrapOnLf = this.get("chkWrapOnLf");
+
     if( content == null ){
       return mkSpanHtml("(null)", "col_null");
     }else if( content === "" ){
@@ -671,11 +678,11 @@ const AppM = Backbone.Model.extend({
       const half = Math.floor( (max - SNIP_STR.length) / 2 );
       const head = content.substring(0, half);
       const tail = content.substring(content.length - half, content.length);
-      return ColContent.toHtml(head)
+      return ColContent.toHtml(head, wrapOnLf)
           + mkSpanHtml(SNIP_STR, "col_snip")
-          + ColContent.toHtml(tail);
+          + ColContent.toHtml(tail, wrapOnLf);
     }else{
-      return ColContent.toHtml(content);
+      return ColContent.toHtml(content, wrapOnLf);
     }
   },
 
@@ -887,6 +894,7 @@ const AppV = Backbone.View.extend({
         "chkOmitTableName": this.$(".chk_omit_table_name").prop("checked"),
         "input": this.$(".input").val(),
         "chkSnipLongCol": this.$(".chk_snip_long_col").prop("checked"),
+        "chkWrapOnLf": this.$(".chk_wrap_on_lf").prop("checked"),
 
         "chkCustomNullStrIn": this.$(".chk_custom_null_str_in").prop("checked"),
         "customNullStrIn": this.$(".custom_null_str_in").val(),
@@ -914,6 +922,7 @@ const AppV = Backbone.View.extend({
     "change .chk_first_row_header": "onchange_chkFirstRowHeader",
     "change .chk_omit_table_name": "onchange_chkOmitTableName",
     "change .chk_snip_long_col": "onchange_chkSnipLongCol",
+    "change .chk_wrap_on_lf": "onchange_chkWrapOnLf",
 
     "change .chk_custom_null_str_in": "onchange_chkCustomNullStrIn",
     "change .custom_null_str_in": "onchange_customNullStrIn",
@@ -1020,6 +1029,12 @@ const AppV = Backbone.View.extend({
     this.model.set(
       "chkSnipLongCol",
       this.$(".chk_snip_long_col").prop("checked"));
+  },
+
+  onchange_chkWrapOnLf: function(){
+    this.model.set(
+      "chkWrapOnLf",
+      this.$(".chk_wrap_on_lf").prop("checked"));
   },
 
   onchange_chkCustomNullStrIn: function(){
