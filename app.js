@@ -456,6 +456,14 @@ function parse_mrtable(text, options){
   }
 }
 
+function parse_jsonArrayTable(text){
+  const lines = text.split("\n")
+        .filter(line => {
+          return ! /^\s*$/.test(line)
+        });
+  return lines.map(line => JSON.parse(line) );
+}
+
 function parse_dbunitXml(text){
   const parser = new DOMParser();
   const dom = parser.parseFromString(
@@ -494,7 +502,7 @@ const AppM = Backbone.Model.extend({
   defaults: {
     input: "",
     rows: [],
-    inputType: null, // regexp | mysql | postgresql | mrtable | dbunit_xml
+    inputType: null, // regexp | mysql | postgresql | mrtable | json_array_table | dbunit_xml
     regexpPattern: "\t",
     chkColNumber: false,
     customHeader: "",
@@ -520,6 +528,9 @@ const AppM = Backbone.Model.extend({
         break;
       case "mrtable":
         return parse_mrtable(text, options);
+        break;
+      case "json_array_table":
+        return parse_jsonArrayTable(text, options);
         break;
       case "dbunit_xml":
         return parse_dbunitXml(text);
