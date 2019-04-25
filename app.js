@@ -605,7 +605,7 @@ const AppM = Backbone.Model.extend({
     }
   },
 
-  toJsonArray: function(){
+  toJsonArrayTable: function(){
     const me = this;
     let headCols = this.headColsCustom || this.headCols || this.headColsNumber;
     headCols = headCols.map((col)=>{ return me.modifyHeadCol(col); });
@@ -952,7 +952,7 @@ const AppV = Backbone.View.extend({
     this.$(".processing_indicator").show();
 
     this.model.parse();
-    this.$(".output_json_array").val(this.model.toJsonArray());
+    this.$(".output_json_array_table").val(this.model.toJsonArrayTable());
     this.$(".output_json_object").val(this.model.toJsonObject());
     this.$(".output_tsv").val(this.model.toTsv());
     this.$(".output_mrtable").val(this.model.toMrtable());
