@@ -606,11 +606,10 @@ const AppM = Backbone.Model.extend({
   },
 
   toJsonArrayTable: function(){
-    const me = this;
     const lines = [];
 
     let headCols = this.headColsCustom || this.headCols || this.headColsNumber;
-    headCols = headCols.map((col)=>{ return me.modifyHeadCol(col); });
+    headCols = headCols.map((col)=>{ return this.modifyHeadCol(col); });
     lines.push( JSON.stringify(headCols) );
 
     this.bodyRows.forEach(cols =>{
