@@ -456,6 +456,14 @@ function parse_mrtable(text, options){
   }
 }
 
+function parse_jsonArrayTable(text){
+  const lines = text.split("\n")
+        .filter(line => {
+          return ! /^\s*$/.test(line)
+        });
+  return lines.map(line => JSON.parse(line) );
+}
+
 function parse_dbunitXml(text){
   const parser = new DOMParser();
   const dom = parser.parseFromString(
@@ -494,7 +502,7 @@ const AppM = Backbone.Model.extend({
   defaults: {
     input: "",
     rows: [],
-    inputType: null, // regexp | mysql | postgresql | mrtable | dbunit_xml
+    inputType: null, // regexp | mysql | postgresql | mrtable | json_array_table | dbunit_xml
     regexpPattern: "\t",
     chkColNumber: false,
     customHeader: "",
@@ -520,6 +528,9 @@ const AppM = Backbone.Model.extend({
         break;
       case "mrtable":
         return parse_mrtable(text, options);
+        break;
+      case "json_array_table":
+        return parse_jsonArrayTable(text, options);
         break;
       case "dbunit_xml":
         return parse_dbunitXml(text);
@@ -594,19 +605,18 @@ const AppM = Backbone.Model.extend({
     }
   },
 
-  toJsonArray: function(){
-    const me = this;
-    let headCols = this.headColsCustom || this.headCols || this.headColsNumber;
-    headCols = headCols.map((col)=>{ return me.modifyHeadCol(col); });
+  toJsonArrayTable: function(){
+    const lines = [];
 
-    let json = '{"header":' + JSON.stringify(headCols);
-    json += ', "rows": [\n';
-    json += this.bodyRows.map(function(cols, i){
-      return "  " + (i === 0 ? "" : "," ) + JSON.stringify(cols) + "\n";
-    }).join("");
-    json += ']';
-    json += '}';
-    return json;
+    let headCols = this.headColsCustom || this.headCols || this.headColsNumber;
+    headCols = headCols.map((col)=>{ return this.modifyHeadCol(col); });
+    lines.push( JSON.stringify(headCols) );
+
+    this.bodyRows.forEach(cols =>{
+      lines.push( JSON.stringify(cols) );
+    })
+
+    return lines.map(line => line + "\n" ).join("");
   },
 
   toJsonObject: function(){
@@ -941,7 +951,7 @@ const AppV = Backbone.View.extend({
     this.$(".processing_indicator").show();
 
     this.model.parse();
-    this.$(".output_json_array").val(this.model.toJsonArray());
+    this.$(".output_json_array_table").val(this.model.toJsonArrayTable());
     this.$(".output_json_object").val(this.model.toJsonObject());
     this.$(".output_tsv").val(this.model.toTsv());
     this.$(".output_mrtable").val(this.model.toMrtable());
