@@ -607,17 +607,17 @@ const AppM = Backbone.Model.extend({
 
   toJsonArrayTable: function(){
     const me = this;
+    const lines = [];
+
     let headCols = this.headColsCustom || this.headCols || this.headColsNumber;
     headCols = headCols.map((col)=>{ return me.modifyHeadCol(col); });
+    lines.push( JSON.stringify(headCols) );
 
-    let json = '{"header":' + JSON.stringify(headCols);
-    json += ', "rows": [\n';
-    json += this.bodyRows.map(function(cols, i){
-      return "  " + (i === 0 ? "" : "," ) + JSON.stringify(cols) + "\n";
-    }).join("");
-    json += ']';
-    json += '}';
-    return json;
+    this.bodyRows.forEach(cols =>{
+      lines.push( JSON.stringify(cols) );
+    })
+
+    return lines.map(line => line + "\n" ).join("");
   },
 
   toJsonObject: function(){
