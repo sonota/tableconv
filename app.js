@@ -81,6 +81,23 @@ function sqlEscape(str){
   ;
 }
 
+function calcMaxlens(rows){
+  if( rows.length === 0 ){
+    throw new Error("rows.length must be >= 1");
+  }
+
+  const maxlens = [];
+  const numCols = rows[0].length;
+  for( let ci=0; ci<numCols; ci++ ){
+    const colsAtCi = [];
+    rows.forEach((cols)=>{
+      colsAtCi.push(cols[ci]);
+    });
+    maxlens[ci] = Math.max.apply(null, colsAtCi.map(strlen));
+  }
+  return maxlens;
+}
+
 
 const SPAN_WS = mkSpanHtml(" ", "col_space");
 
@@ -606,23 +623,6 @@ const AppM = Backbone.Model.extend({
   },
 
   toJsonArrayTable: function(){
-    function calcMaxlens(rows){
-      if( rows.length === 0 ){
-        throw new Error("rows.length must be >= 1");
-      }
-
-      const maxlens = [];
-      const numCols = rows[0].length;
-      for( let ci=0; ci<numCols; ci++ ){
-        const colsAtCi = [];
-        rows.forEach((cols)=>{
-          colsAtCi.push(cols[ci]);
-        });
-        maxlens[ci] = Math.max.apply(null, colsAtCi.map(strlen));
-      }
-      return maxlens;
-    }
-
     const lines = [];
 
     let headCols = this.headColsCustom || this.headCols || this.headColsNumber;
@@ -787,19 +787,6 @@ const AppM = Backbone.Model.extend({
       }
     }
 
-    function calcMaxlens(rows){
-      const maxlens = [];
-      const numCols = rows[0].length;
-      for( let ci=0; ci<numCols; ci++ ){
-        const colsAtCi = [];
-        rows.forEach((cols)=>{
-          colsAtCi.push(cols[ci]);
-        });
-        maxlens[ci] = Math.max.apply(null, colsAtCi.map(strlen));
-      }
-      return maxlens;
-    }
-
     const me = this;
     let headCols = this.headColsCustom || this.headCols || this.headColsNumber;
     headCols = headCols.map((col)=>{ return me.modifyHeadCol(col); });
@@ -846,19 +833,6 @@ const AppM = Backbone.Model.extend({
         return "";
       }
       return headCol + '="' + _.escape(col) + '"';
-    }
-
-    function calcMaxlens(rows){
-      const maxlens = [];
-      const numCols = rows[0].length;
-      for( let ci=0; ci<numCols; ci++ ){
-        const colsAtCi = [];
-        rows.forEach((cols)=>{
-          colsAtCi.push(cols[ci]);
-        });
-        maxlens[ci] = Math.max.apply(null, colsAtCi.map(strlen));
-      }
-      return maxlens;
     }
 
     if (this.bodyRows.length === 0) {
