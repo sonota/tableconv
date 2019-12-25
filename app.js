@@ -606,17 +606,44 @@ const AppM = Backbone.Model.extend({
   },
 
   toJsonArrayTable: function(){
+    function calcMaxlens(rows){
+      if( rows.length === 0 ){
+        throw new Error("rows.length must be >= 1");
+      }
+
+      const maxlens = [];
+      const numCols = rows[0].length;
+      for( let ci=0; ci<numCols; ci++ ){
+        const colsAtCi = [];
+        rows.forEach((cols)=>{
+          colsAtCi.push(cols[ci]);
+        });
+        maxlens[ci] = Math.max.apply(null, colsAtCi.map(strlen));
+      }
+      return maxlens;
+    }
+
     const lines = [];
 
     let headCols = this.headColsCustom || this.headCols || this.headColsNumber;
     headCols = headCols.map((col)=>{ return this.modifyHeadCol(col); });
-    lines.push( JSON.stringify(headCols) );
 
-    this.bodyRows.forEach(cols =>{
-      lines.push( JSON.stringify(cols) );
-    })
+    const allRows = [headCols].concat(this.bodyRows);
 
-    return lines.map(line => line + "\n" ).join("");
+    const serealized = mapColWithCi(allRows, (col, ci)=>{
+      return JSON.stringify(col);
+    });
+
+    const maxlens = calcMaxlens(serealized);
+
+    const padded = mapColWithCi(serealized, (col, ci)=>{
+      return padRight(col, maxlens[ci]);
+    });
+
+    return padded
+      .map(cols => {
+        return "[ " + cols.join(" , ") + " ]\n";
+      }).join("");
   },
 
   toJsonObject: function(){
