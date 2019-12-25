@@ -565,7 +565,10 @@ const AppM = Backbone.Model.extend({
       this.rows = dispatch(me, text);
     }catch(e){
       puts(e);
-      this.rows = [[]];
+      this.rows = [
+        ["ERROR"],
+        [String(e)]
+      ];
     }
 
     let bodyRows = this.rows;
