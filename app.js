@@ -861,6 +861,10 @@ const AppM = Backbone.Model.extend({
       return maxlens;
     }
 
+    if (this.bodyRows.length === 0) {
+      return "";
+    }
+
     const me = this;
     let headCols = this.headColsCustom || this.headCols || this.headColsNumber;
     headCols = headCols.map((col)=>{ return me.modifyHeadCol(col); });
