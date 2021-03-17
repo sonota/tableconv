@@ -535,19 +535,14 @@ const AppM = Backbone.Model.extend({
       switch(me.get("inputType")){
       case "mysql":
         return parse_mysql(text);
-        break;
       case "postgresql":
         return parse_postgresql(text);
-        break;
       case "mrtable":
         return parse_mrtable(text, options);
-        break;
       case "json_array_table":
         return parse_jsonArrayTable(text, options);
-        break;
       case "dbunit_xml":
         return parse_dbunitXml(text);
-        break;
       default:
         options.re = new RegExp(me.get("regexpPattern"));
         return parse_regexp(text, options);
