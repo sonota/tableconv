@@ -8,7 +8,7 @@ function puts(){
 }
 
 function strip(s){
-  return s.replace(/^\s+|\s+$/g, "");
+  return s.trim();
 }
 
 /**
