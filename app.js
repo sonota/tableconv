@@ -1119,7 +1119,7 @@ $(function(){
     el: $("body")[0]
   });
 
-  if( /\?test=1$/.test(location.href) ){
+  if (new URL(location.href).searchParams.get("test") === "1") {
     const el = document.createElement("script");
     el.setAttribute("src", "./test.js");
     const body = document.querySelector("body");
