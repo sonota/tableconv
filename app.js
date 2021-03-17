@@ -3,8 +3,8 @@ const NULL_STR = "NULL";
 const COL_CONTENT_LENGTH_MAX_DEFAULT = 32;
 const NUM_ROWS_MAX = 500;
 
-function puts(){
-  console.log.apply(console, arguments);
+function puts(...args){
+  console.log(...args);
 }
 
 function strip(s){
