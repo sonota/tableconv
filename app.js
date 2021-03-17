@@ -398,7 +398,7 @@ function parse_regexp(text, options){
   }
 
   const re = options.re;
-  const source = re.toSource();
+  const source = re.toString();
   if(
     source === "/(?:)/" // empty
     || source === "/./"
