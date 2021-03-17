@@ -1112,7 +1112,7 @@ const AppV = Backbone.View.extend({
   }
 });
 
-$(function(){
+function init() {
   const appM = new AppM();
   const appV = new AppV({
     model: appM,
@@ -1128,4 +1128,6 @@ $(function(){
       _test();
     });
   }
-});
+}
+
+$(init);
