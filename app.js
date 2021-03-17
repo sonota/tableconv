@@ -38,11 +38,7 @@ function strlen(s){
 }
 
 function mkstr(s, n){
-  let ret = "";
-  for(let i=0; i<n; i++){
-    ret += s;
-  }
-  return ret;
+  return s.repeat(n);
 }
 
 function padRight(s, n){
