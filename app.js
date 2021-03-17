@@ -185,7 +185,7 @@ class ColContent {
       }
     }
 
-    if(posPrevEom < ss.pos){
+    if (posPrevEom < ss.pos) {
       ts.push( _t("plain", ss.substring(posPrevEom, ss.pos)) );
     }
 
@@ -194,9 +194,9 @@ class ColContent {
 
   static _toHtml(tokens, wrapOnLf){
     return tokens.map((token)=>{
-      if(token.type === 'space'){
+      if (token.type === 'space') {
         return mkstr(SPAN_WS, token.str.length);
-      }else if(token.type === 'ctrl_cd'){
+      } else if (token.type === 'ctrl_cd') {
         return mapChars(token.str, function(c, i){
           if( wrapOnLf && c === "\n" ){
             return SPAN_CTRL_CD_MAP[c] + "\n";
@@ -389,16 +389,16 @@ function mapColWithCi(rows, fn){
 
 function parse_regexp(text, options){
   const lines = text.split("\n");
-  if(lines.length > NUM_ROWS_MAX){
+  if (lines.length > NUM_ROWS_MAX) {
     throw new Error("Too many rows");
   }
 
   const re = options.re;
   const source = re.toString();
-  if(
+  if (
     source === "/(?:)/" // empty
     || source === "/./"
-    ){
+    ) {
     throw new Error("Invalid regexp pattern");
   }
 
@@ -408,7 +408,7 @@ function parse_regexp(text, options){
     return line.split(re);
   });
 
-  if("customNullStrIn" in options){
+  if ("customNullStrIn" in options) {
     const nullStr = options.customNullStrIn
     return mapColWithCi(rows, (col, ci)=>{
       return col === nullStr ? null : col;
@@ -420,7 +420,7 @@ function parse_regexp(text, options){
 
 function parse_mysql(text){
   const lines = text.split("\n");
-  if(lines.length > NUM_ROWS_MAX){
+  if (lines.length > NUM_ROWS_MAX) {
     throw new Error("Too many rows");
   }
 
@@ -440,7 +440,7 @@ function parse_mysql(text){
 
 function parse_postgresql(text){
   const lines = text.split("\n");
-  if(lines.length > NUM_ROWS_MAX){
+  if (lines.length > NUM_ROWS_MAX) {
     throw new Error("Too many rows");
   }
 
@@ -459,7 +459,7 @@ function parse_postgresql(text){
 function parse_mrtable(text, options){
   const rows = Mrtable.parse(text);
 
-  if("customNullStrIn" in options){
+  if ("customNullStrIn" in options) {
     const nullStr = options.customNullStrIn;
     return mapColWithCi(rows, (col, ci)=>{
       return col === nullStr ? null : col;
@@ -609,9 +609,9 @@ const AppM = Backbone.Model.extend({
 
   // for customization
   modifyHeadCol: function(col){
-    if(this.get("chkOmitTableName")){
+    if (this.get("chkOmitTableName")) {
       const i = col.indexOf(".");
-      if(i >= 1){
+      if (i >= 1) {
         return col.substring(i + 1);
       }else{
         return col;
@@ -828,7 +828,7 @@ const AppM = Backbone.Model.extend({
 
   toDbunitXml: function(){
     function convertCol(headCol, col){
-      if(col == null){
+      if (col == null) {
         return "";
       }
       return headCol + '="' + _.escape(col) + '"';
@@ -1098,10 +1098,10 @@ const AppV = Backbone.View.extend({
 
   getColContentLengthMax: function(){
     const n = parseInt(this.$(".col_content_length_max").val(), 10);
-    if(isNaN(n)){
+    if (isNaN(n)) {
       return COL_CONTENT_LENGTH_MAX_DEFAULT;
     }
-    if(n < SNIP_STR.length + 2){
+    if (n < SNIP_STR.length + 2) {
       return SNIP_STR.length + 2;
     }
     return n;
