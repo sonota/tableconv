@@ -919,6 +919,7 @@ const AppV = Backbone.View.extend({
       { silent: true }
     );
 
+    this.loadState();
     this.render();
   },
 
@@ -1118,31 +1119,27 @@ const AppV = Backbone.View.extend({
       input: this.model.get("input"),
       regexpPattern: this.model.get("regexpPattern")
     };
-    saveState(state);
+    // console.table(state);
+    sessionStorage.setItem("state", JSON.stringify(state));
+  },
+
+  loadState: function(){
+    let json = sessionStorage.getItem("state");
+    if (json == null) {
+      puts("no state");
+      return;
+    }
+
+    const state = JSON.parse(json);
+    // console.table(state);
+    if (state.input) {
+      this.setInput(state.input);
+    }
+    if (state.regexpPattern) {
+      this.setRegexpPattern(state.regexpPattern);
+    }
   }
 });
-
-function saveState(state) {
-  // console.table(state);
-  sessionStorage.setItem("state", JSON.stringify(state));
-}
-
-function loadState(appV) {
-  let json = sessionStorage.getItem("state");
-  if (json == null) {
-    puts("no state");
-    return;
-  }
-
-  const state = JSON.parse(json);
-  // console.table(state);
-  if (state.input) {
-    appV.setInput(state.input);
-  }
-  if (state.regexpPattern) {
-    appV.setRegexpPattern(state.regexpPattern);
-  }
-}
 
 function init() {
   const appM = new AppM();
@@ -1150,8 +1147,6 @@ function init() {
     model: appM,
     el: $("body")[0]
   });
-
-  loadState(appV);
 
   if (new URL(location.href).searchParams.get("test") === "1") {
     const el = document.createElement("script");
