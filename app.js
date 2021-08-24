@@ -19,7 +19,7 @@ function includeZenkaku(s){
 }
 
 function strlen(s){
-  if(s == null){
+  if (s == null) {
     return 0;
   }
   if( includeZenkaku(s) ){
@@ -231,7 +231,7 @@ class Mrtable {
       if( pos >= numRepeatMax ){ break; }
       posDelta = 1;
       rest = line2.substring(pos);
-      if( /^ \| /.test(rest) ){
+      if (/^ \| /.test(rest)) {
         cols.push(buf); buf = "";
         posDelta = 3;
       }else if( /^\\/.test(rest) ){
@@ -528,7 +528,7 @@ const AppM = Backbone.Model.extend({
 
     function dispatch(me, text){
       const options = {};
-      if( me.get("chkCustomNullStrIn") ){
+      if (me.get("chkCustomNullStrIn")) {
         options.customNullStrIn = me.get("customNullStrIn");
       }
 
@@ -760,7 +760,7 @@ const AppM = Backbone.Model.extend({
     headCols = headCols.map((col)=>{ return me.modifyHeadCol(col); });
 
     let bodyRows = this.bodyRows;
-    if( this.get("chkCustomNullStrOut") ){
+    if (this.get("chkCustomNullStrOut")) {
       const nullStr = this.get("customNullStrOut");
       bodyRows = mapColWithCi(bodyRows, (col, ci)=>{
         return col === null ? nullStr : col;
