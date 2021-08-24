@@ -998,6 +998,8 @@ const AppV = Backbone.View.extend({
 
   oninput_input: function(){
     this.model.set("input", this.$(".input").val());
+    puts(this.model);
+    this.model.saveConf();
   },
 
   onchange_inputType: function(){
@@ -1100,8 +1102,35 @@ const AppV = Backbone.View.extend({
       return SNIP_STR.length + 2;
     }
     return n;
+  },
+
+  method: {
+    saveConf: function(){
+      puts(1106);
+    }
   }
 });
+
+function saveConf() {
+  appM.get();
+  const conf = {
+    input: "FDSA"
+  };
+  sessionStorage.setItem("conf", JSON.stringify(conf));
+}
+
+function loadConf() {
+  let json;
+  if (json = sessionStorage.getItem("config")) {
+    puts(1115, json);
+    const conf = JSON.parse(json);
+    if (conf.input) {
+      puts(1117, conf.input);
+    }
+  } else {
+    puts("no conf");
+  }
+}
 
 function init() {
   const appM = new AppM();
