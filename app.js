@@ -891,6 +891,7 @@ const AppM = Backbone.Model.extend({
 const AppV = Backbone.View.extend({
   initialize: function(){
     this.listenTo(this.model, "change", _.debounce(this.render, 200));
+    this.listenTo(this.model, "change", _.debounce(this.saveState, 500));
 
     this.model.set(
       {
@@ -998,8 +999,6 @@ const AppV = Backbone.View.extend({
 
   oninput_input: function(){
     this.model.set("input", this.$(".input").val());
-    puts(this.model);
-    this.model.saveConf();
   },
 
   onchange_inputType: function(){
@@ -1085,6 +1084,16 @@ const AppV = Backbone.View.extend({
     this.model.trigger("change:colContentLengthMax");
   },
 
+  setInput: function(val){
+    this.model.set("input", val);
+    this.$(".input").val(val);
+  },
+
+  setRegexpPattern: function(val){
+    this.model.set("regexpPattern", val);
+    this.$(".regexp_pattern").val(val);
+  },
+
   getInputType: function(){
     return this.$("[name=input_type]:checked").val();
   },
@@ -1104,31 +1113,34 @@ const AppV = Backbone.View.extend({
     return n;
   },
 
-  method: {
-    saveConf: function(){
-      puts(1106);
-    }
+  saveState: function(){
+    const state = {
+      input: this.model.get("input"),
+      regexpPattern: this.model.get("regexpPattern")
+    };
+    saveState(state);
   }
 });
 
-function saveConf() {
-  appM.get();
-  const conf = {
-    input: "FDSA"
-  };
-  sessionStorage.setItem("conf", JSON.stringify(conf));
+function saveState(state) {
+  // console.table(state);
+  sessionStorage.setItem("state", JSON.stringify(state));
 }
 
-function loadConf() {
-  let json;
-  if (json = sessionStorage.getItem("config")) {
-    puts(1115, json);
-    const conf = JSON.parse(json);
-    if (conf.input) {
-      puts(1117, conf.input);
-    }
-  } else {
-    puts("no conf");
+function loadState(appV) {
+  let json = sessionStorage.getItem("state");
+  if (json == null) {
+    puts("no state");
+    return;
+  }
+
+  const state = JSON.parse(json);
+  // console.table(state);
+  if (state.input) {
+    appV.setInput(state.input);
+  }
+  if (state.regexpPattern) {
+    appV.setRegexpPattern(state.regexpPattern);
   }
 }
 
@@ -1138,6 +1150,8 @@ function init() {
     model: appM,
     el: $("body")[0]
   });
+
+  loadState(appV);
 
   if (new URL(location.href).searchParams.get("test") === "1") {
     const el = document.createElement("script");
