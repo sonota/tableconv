@@ -404,13 +404,28 @@ function parse_regexp(text, options){
     throw new Error("Invalid regexp pattern");
   }
 
-  const rows = lines
+  let rows = lines
     .filter((line)=>{
       return ! /^\s*$/.test(line);
     })
     .map((line)=>{
       return line.split(re);
     });
+
+  if (location.href.includes("custom-csv")) {
+    rows =
+      rows
+        .map(cols =>
+           cols.map(col => {
+             let m;
+             if (m = col.match(/^"(.*)"$/)) {
+               return m[1];
+             } else {
+               return col;
+             }
+           })
+        );
+  }
 
   if ("customNullStrIn" in options) {
     const nullStr = options.customNullStrIn
