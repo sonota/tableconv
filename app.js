@@ -22,7 +22,7 @@ function strlen(s){
   if (s == null) {
     return 0;
   }
-  if( includeZenkaku(s) ){
+  if (includeZenkaku(s)) {
     let len = 0;
     for(let i=0,slen=s.length; i<slen; i++){
       if( includeZenkaku(s.charAt(i)) ){
@@ -167,7 +167,7 @@ class ColContent {
      * \u00a0: nbsp
      */
     while( ! ss.isEos() ){
-      if( ss.scan( /^[\u0020\u00a0]+/ ) ){
+      if (ss.scan( /^[\u0020\u00a0]+/ )) {
         if( posPrevEom < ss.posBom ){
           ts.push( _t("plain", ss.substring(posPrevEom, ss.posBom)) );
         }
@@ -339,7 +339,7 @@ class Mrtable {
   }
 
   static padCol(col, maxlen){
-    if( col.match(/^\-?\d+$/) ){
+    if (col.match(/^\-?\d+$/)) {
       return padLeft(col, maxlen);
     }else{
       return padRight(col, maxlen);
@@ -571,7 +571,7 @@ const AppM = Backbone.Model.extend({
     this.headCols = null;
     this.headColsCustom = null;
 
-    if( this.get("chkFirstRowHeader") ){
+    if (this.get("chkFirstRowHeader")) {
       this.headCols = this.rows[0];
       bodyRows = this.rows.slice(1);
     }
@@ -699,7 +699,7 @@ const AppM = Backbone.Model.extend({
     const max = this.get("colContentLengthMax");
     const wrapOnLf = this.get("chkWrapOnLf");
 
-    if( content == null ){
+    if (content == null) {
       return mkSpanHtml("(null)", "col_null");
     }else if( content === "" ){
       return mkSpanHtml("(empty)", "col_empty");
@@ -864,7 +864,7 @@ const AppM = Backbone.Model.extend({
 
   toRDataFrame: function(){
     function convertCol(col){
-      if( col == null ){
+      if (col == null) {
         return "NA";
       }else{
         return '"' + col + '"';
