@@ -287,16 +287,18 @@ class Mrtable {
       throw new Error("Too many rows");
     }
 
-    return lines.filter((line)=>{
-      return ! ( /^\| \-\-\-+/.test(line)
-                 || /^\s*$/.test(line)
-               );
-    }).map((line)=>{
-      const cols = Mrtable.splitRow(line);
-      const cols_stripped = cols.map(strip);
-      const cols_parsed = cols_stripped.map(Mrtable.parseCol);
-      return cols_parsed;
-    });
+    return lines
+      .filter(line =>
+        ! ( /^\| \-\-\-+/.test(line)
+            || /^\s*$/.test(line)
+          )
+      )
+      .map(line => {
+        const cols = Mrtable.splitRow(line);
+        const cols_stripped = cols.map(strip);
+        const cols_parsed = cols_stripped.map(Mrtable.parseCol);
+        return cols_parsed;
+      });
   }
 
   static mapCol(rows, fn){
