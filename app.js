@@ -25,7 +25,7 @@ function strlen(s){
   if (includeZenkaku(s)) {
     let len = 0;
     for(let i=0,slen=s.length; i<slen; i++){
-      if( includeZenkaku(s.charAt(i)) ){
+      if (includeZenkaku(s.charAt(i))) {
         len += 2;
       }else{
         len += 1;
@@ -120,7 +120,7 @@ class StrScan {
   scan(re){
     this.posBom = this.pos;
 
-    if( ! re.test(this.rest) ){
+    if (! re.test(this.rest)) {
       this.m = null;
       return null;
     }
@@ -168,7 +168,7 @@ class ColContent {
      */
     while( ! ss.isEos() ){
       if (ss.scan( /^[\u0020\u00a0]+/ )) {
-        if( posPrevEom < ss.posBom ){
+        if (posPrevEom < ss.posBom) {
           ts.push( _t("plain", ss.substring(posPrevEom, ss.posBom)) );
         }
         ts.push( _t("space", ss.m[0]) );
@@ -198,7 +198,7 @@ class ColContent {
         return mkstr(SPAN_WS, token.str.length);
       } else if (token.type === 'ctrl_cd') {
         return mapChars(token.str, function(c, i){
-          if( wrapOnLf && c === "\n" ){
+          if (wrapOnLf && c === "\n") {
             return SPAN_CTRL_CD_MAP[c] + "\n";
           }else {
             return SPAN_CTRL_CD_MAP[c];
@@ -254,7 +254,7 @@ class Mrtable {
 
   static jsonEncode(val){
     const json = JSON.stringify([val]);
-    if( json.match(/^\["(.*)"\]/) ){
+    if (json.match(/^\["(.*)"\]/)) {
       return RegExp.$1;
     }else if( json.match(/^\[(.*)\]/) ){
       return RegExp.$1;
@@ -575,7 +575,7 @@ const AppM = Backbone.Model.extend({
       this.headCols = this.rows[0];
       bodyRows = this.rows.slice(1);
     }
-    if( this.get("chkCustomHeader") ){
+    if (this.get("chkCustomHeader")) {
       this.headColsCustom = this.get("customHeader");
     }
     this.bodyRows = bodyRows;
@@ -668,7 +668,7 @@ const AppM = Backbone.Model.extend({
     const me = this;
     let tsv = "";
 
-    if( this.get("chkColNumber") ){
+    if (this.get("chkColNumber")) {
       tsv += this.toTsvRow(this.headColsNumber) + "\n";
     }
 
@@ -772,7 +772,7 @@ const AppM = Backbone.Model.extend({
 
   toSqlInsert: function(){
     function convertCol(col){
-      if( col == null ){
+      if (col == null) {
         return "NULL";
       }else if( col.match(/^now\(\)$/i) ){
         return "NOW()";
