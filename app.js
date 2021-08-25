@@ -891,6 +891,7 @@ const AppM = Backbone.Model.extend({
 const AppV = Backbone.View.extend({
   initialize: function(){
     this.listenTo(this.model, "change", _.debounce(this.render, 200));
+    this.listenTo(this.model, "change", _.debounce(this.saveState, 500));
 
     this.model.set(
       {
@@ -918,6 +919,7 @@ const AppV = Backbone.View.extend({
       { silent: true }
     );
 
+    this.loadState();
     this.render();
   },
 
@@ -1083,6 +1085,16 @@ const AppV = Backbone.View.extend({
     this.model.trigger("change:colContentLengthMax");
   },
 
+  setInput: function(val){
+    this.model.set("input", val);
+    this.$(".input").val(val);
+  },
+
+  setRegexpPattern: function(val){
+    this.model.set("regexpPattern", val);
+    this.$(".regexp_pattern").val(val);
+  },
+
   getInputType: function(){
     return this.$("[name=input_type]:checked").val();
   },
@@ -1100,6 +1112,32 @@ const AppV = Backbone.View.extend({
       return SNIP_STR.length + 2;
     }
     return n;
+  },
+
+  saveState: function(){
+    const state = {
+      input: this.model.get("input"),
+      regexpPattern: this.model.get("regexpPattern")
+    };
+    // console.table(state);
+    sessionStorage.setItem("state", JSON.stringify(state));
+  },
+
+  loadState: function(){
+    let json = sessionStorage.getItem("state");
+    if (json == null) {
+      puts("no state");
+      return;
+    }
+
+    const state = JSON.parse(json);
+    // console.table(state);
+    if (state.input) {
+      this.setInput(state.input);
+    }
+    if (state.regexpPattern) {
+      this.setRegexpPattern(state.regexpPattern);
+    }
   }
 });
 
