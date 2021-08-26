@@ -404,11 +404,13 @@ function parse_regexp(text, options){
     throw new Error("Invalid regexp pattern");
   }
 
-  const rows = lines.filter((line)=>{
-    return ! /^\s*$/.test(line);
-  }).map((line)=>{
-    return line.split(re);
-  });
+  const rows = lines
+    .filter((line)=>{
+      return ! /^\s*$/.test(line);
+    })
+    .map((line)=>{
+      return line.split(re);
+    });
 
   if ("customNullStrIn" in options) {
     const nullStr = options.customNullStrIn
@@ -446,16 +448,18 @@ function parse_postgresql(text){
     throw new Error("Too many rows");
   }
 
-  return lines.filter((line)=>{
-    return ! ( /^\-/.test(line)
-               || /^\s*$/.test(line)
-             );
-  }).map((line)=>{
-    let cols = (" |" + line + " | ").split(" | ");
-    cols.shift();
-    cols.pop();
-    return cols.map(strip);
-  });
+  return lines
+    .filter((line)=>{
+      return ! ( /^\-/.test(line)
+                 || /^\s*$/.test(line)
+               );
+    })
+    .map((line)=>{
+      let cols = (" |" + line + " | ").split(" | ");
+      cols.shift();
+      cols.pop();
+      return cols.map(strip);
+    });
 }
 
 function parse_mrtable(text, options){
@@ -649,13 +653,17 @@ const AppM = Backbone.Model.extend({
 
     let json = '{"header":' + JSON.stringify(headCols);
     json += ', "rows": [\n';
-    json += this.bodyRows.map(function(cols, i){
-      const obj = {};
-      cols.forEach((col, ci)=>{
-        obj[headCols[ci]] = col;
-      });
-      return "  " + (i === 0 ? "" : "," ) + JSON.stringify(obj) + "\n";
-    }).join("");
+
+    json += this.bodyRows
+      .map(function(cols, i){
+        const obj = {};
+        cols.forEach((col, ci)=>{
+          obj[headCols[ci]] = col;
+        });
+        return "  " + (i === 0 ? "" : "," ) + JSON.stringify(obj) + "\n";
+      })
+      .join("");
+
     json += ']';
     json += '}';
     return json;
@@ -815,10 +823,12 @@ const AppM = Backbone.Model.extend({
     s += headCols2.join(", ");
     s += ")\nVALUES\n";
 
-    s += bodyRows2.map((cols, ri)=>{
-      return ((ri === 0) ? "  " : " ,")
-        + "(" + cols.join(", ") + ")\n";
-    }).join("");
+    s += bodyRows2
+      .map((cols, ri)=>{
+        return ((ri === 0) ? "  " : " ,")
+          + "(" + cols.join(", ") + ")\n";
+      })
+      .join("");
 
     return s + ";\n";
   },
