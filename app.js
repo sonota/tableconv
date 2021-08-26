@@ -78,7 +78,7 @@ function sqlEscape(str){
 }
 
 function calcMaxlens(rows){
-  if( rows.length === 0 ){
+  if (rows.length === 0) {
     throw new Error("rows.length must be >= 1");
   }
 
@@ -228,7 +228,7 @@ class Mrtable {
     let buf = "";
 
     for( let i=0; i<numRepeatMax; i++ ){
-      if( pos >= numRepeatMax ){ break; }
+      if (pos >= numRepeatMax) { break; }
       posDelta = 1;
       rest = line2.substring(pos);
       if (/^ \| /.test(rest)) {
@@ -272,7 +272,7 @@ class Mrtable {
   }
 
   static parseCol(col){
-    if( col === "" ){
+    if (col === "") {
       return null;
     }else if( col === '""' ){
       return "";
@@ -308,7 +308,7 @@ class Mrtable {
   }
 
   static serealizeCol(col){
-    if( col == null ){
+    if (col == null) {
       return "";
     }else if( col === "" ){
       return '""';
@@ -674,7 +674,7 @@ const AppM = Backbone.Model.extend({
       tsv += this.toTsvRow(this.headColsNumber) + "\n";
     }
 
-    if( this.get("chkCustomHeader") ){
+    if (this.get("chkCustomHeader")) {
       tsv += this.toTsvRow(this.headColsCustom) + "\n";
     }
 
@@ -727,7 +727,7 @@ const AppM = Backbone.Model.extend({
       return '<th>' + col + '</th>';
     }) + '</tr>';
 
-    if( this.get("chkCustomHeader") ){
+    if (this.get("chkCustomHeader")) {
       h += '<tr><th>custom</th>' + this.headColsCustom.map(function(col){
         return '<th>' + col + '</th>';
       }) + '</tr>';
