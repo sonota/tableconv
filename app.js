@@ -173,7 +173,7 @@ class ColContent {
         }
         ts.push( _t("space", ss.m[0]) );
         posPrevEom = ss.pos;
-      }else if( ss.scan(/^[\b\f\n\r\t\\]/) ){
+      } else if (ss.scan(/^[\b\f\n\r\t\\]/)) {
         if( posPrevEom < ss.posBom ){
           ts.push( _t("plain", ss.substring(posPrevEom, ss.posBom)) );
         }
@@ -256,7 +256,7 @@ class Mrtable {
     const json = JSON.stringify([val]);
     if (json.match(/^\["(.*)"\]/)) {
       return RegExp.$1;
-    }else if( json.match(/^\[(.*)\]/) ){
+    } else if (json.match(/^\[(.*)\]/)) {
       return RegExp.$1;
     }else{
       return json;
@@ -274,7 +274,7 @@ class Mrtable {
   static parseCol(col){
     if (col === "") {
       return null;
-    }else if( col === '""' ){
+    } else if (col === '""') {
       return "";
     }else{
       return Mrtable.jsonDecode(col);
@@ -310,7 +310,7 @@ class Mrtable {
   static serealizeCol(col){
     if (col == null) {
       return "";
-    }else if( col === "" ){
+    } else if (col === "") {
       return '""';
     }
 
@@ -686,7 +686,7 @@ const AppM = Backbone.Model.extend({
       tsv += this.toTsvRow(this.headColsCustom) + "\n";
     }
 
-    if( this.get("chkFirstRowHeader") ){
+    if (this.get("chkFirstRowHeader")) {
       const headCols = this.headCols.map((col)=>{ return me.modifyHeadCol(col); });
       tsv += this.toTsvRow(headCols) + "\n";
     }
@@ -741,7 +741,7 @@ const AppM = Backbone.Model.extend({
       }) + '</tr>';
     }
 
-    if( this.get("chkFirstRowHeader") ){
+    if (this.get("chkFirstRowHeader")) {
       const headCols = this.headCols.map((col)=>{ return me.modifyHeadCol(col); });
       h += '<tr><th>1st row</th>' + headCols.map(function(col){
         return '<th>' + col + '</th>';
@@ -784,7 +784,7 @@ const AppM = Backbone.Model.extend({
     function convertCol(col){
       if (col == null) {
         return "NULL";
-      }else if( col.match(/^now\(\)$/i) ){
+      } else if (col.match(/^now\(\)$/i)) {
         return "NOW()";
       }else{
         return "'" + sqlEscape(col) + "'";
