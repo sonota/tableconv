@@ -174,7 +174,7 @@ class ColContent {
         ts.push( _t("space", ss.m[0]) );
         posPrevEom = ss.pos;
       } else if (ss.scan(/^[\b\f\n\r\t\\]/)) {
-        if( posPrevEom < ss.posBom ){
+        if (posPrevEom < ss.posBom) {
           ts.push( _t("plain", ss.substring(posPrevEom, ss.posBom)) );
         }
         ts.push( _t("ctrl_cd", ss.m[0]) );
@@ -234,7 +234,7 @@ class Mrtable {
       if (/^ \| /.test(rest)) {
         cols.push(buf); buf = "";
         posDelta = 3;
-      }else if( /^\\/.test(rest) ){
+      } else if (/^\\/.test(rest)) {
         if (rest[1] === "|") {
           buf += rest[1];
           posDelta = 2;
@@ -264,7 +264,7 @@ class Mrtable {
   }
 
   static jsonDecode(str){
-    if( /^".*"$/.test(str) ){
+    if (/^".*"$/.test(str)) {
       return JSON.parse('[' + str + ']')[0];
     }else{
       return JSON.parse('["' + str + '"]')[0];
@@ -283,7 +283,7 @@ class Mrtable {
 
   static parse(text){
     const lines = text.split(/\r?\n/);
-    if( lines.length > NUM_ROWS_MAX ){
+    if (lines.length > NUM_ROWS_MAX) {
       throw new Error("Too many rows");
     }
 
@@ -315,7 +315,7 @@ class Mrtable {
     }
 
     let ret = Mrtable.jsonEncode(col);
-    if( /^\s+/.test(ret) || /\s+$/.test(ret)
+    if (/^\s+/.test(ret) || /\s+$/.test(ret)
         || /^\-+$/.test(ret)
       ){
       ret = '"' + ret + '"';
@@ -692,7 +692,7 @@ const AppM = Backbone.Model.extend({
     }
 
     let bodyRows = this.bodyRows;
-    if( this.get("chkCustomNullStrOut") ){
+    if (this.get("chkCustomNullStrOut")) {
       const nullStr = this.get("customNullStrOut");
       bodyRows = mapColWithCi(bodyRows, (col, ci)=>{
         return col === null ? nullStr : col;
@@ -711,11 +711,11 @@ const AppM = Backbone.Model.extend({
 
     if (content == null) {
       return mkSpanHtml("(null)", "col_null");
-    }else if( content === "" ){
+    } else if (content === "") {
       return mkSpanHtml("(empty)", "col_empty");
-    }else if( this.get("chkSnipLongCol")
+    } else if (this.get("chkSnipLongCol")
         && content.length > max
-      ){
+      ) {
       const half = Math.floor( (max - SNIP_STR.length) / 2 );
       const head = content.substring(0, half);
       const tail = content.substring(content.length - half, content.length);
@@ -752,7 +752,7 @@ const AppM = Backbone.Model.extend({
       h += '<tr>';
       h += '<th>' + (ri + 1) + '</th>';
       cols.forEach((col)=>{
-        if( isNumber(col) ){
+        if (isNumber(col)) {
           h += '<td class="right">';
         }else{
           h += '<td>';
