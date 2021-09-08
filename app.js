@@ -27,12 +27,12 @@ function strlen(s){
     for(let i=0,slen=s.length; i<slen; i++){
       if (includeZenkaku(s.charAt(i))) {
         len += 2;
-      }else{
+      } else {
         len += 1;
       }
     }
     return len;
-  }else{
+  } else {
     return s.length;
   }
 }
@@ -179,7 +179,7 @@ class ColContent {
         }
         ts.push( _t("ctrl_cd", ss.m[0]) );
         posPrevEom = ss.pos;
-      }else{
+      } else {
         // 先頭にマッチするまでスキップ
         ss.movePos(1);
       }
@@ -204,7 +204,7 @@ class ColContent {
             return SPAN_CTRL_CD_MAP[c];
           }
         }).join("");
-      }else{
+      } else {
         return _.escape(token.str);
       }
     }).join("");
@@ -238,12 +238,12 @@ class Mrtable {
         if (rest[1] === "|") {
           buf += rest[1];
           posDelta = 2;
-        }else{
+        } else {
           buf += rest[0];
           buf += rest[1];
           posDelta = 2;
         }
-      }else{
+      } else {
         buf += rest[0];
       }
       pos += posDelta;
@@ -258,7 +258,7 @@ class Mrtable {
       return RegExp.$1;
     } else if (json.match(/^\[(.*)\]/)) {
       return RegExp.$1;
-    }else{
+    } else {
       return json;
     }
   }
@@ -266,7 +266,7 @@ class Mrtable {
   static jsonDecode(str){
     if (/^".*"$/.test(str)) {
       return JSON.parse('[' + str + ']')[0];
-    }else{
+    } else {
       return JSON.parse('["' + str + '"]')[0];
     }
   }
@@ -276,7 +276,7 @@ class Mrtable {
       return null;
     } else if (col === '""') {
       return "";
-    }else{
+    } else {
       return Mrtable.jsonDecode(col);
     }
   }
@@ -343,7 +343,7 @@ class Mrtable {
   static padCol(col, maxlen){
     if (col.match(/^\-?\d+$/)) {
       return padLeft(col, maxlen);
-    }else{
+    } else {
       return padRight(col, maxlen);
     }
   }
@@ -417,7 +417,7 @@ function parse_regexp(text, options){
     return mapColWithCi(rows, (col, ci)=>{
       return col === nullStr ? null : col;
     });
-  }else{
+  } else {
     return rows;
   }
 }
@@ -470,7 +470,7 @@ function parse_mrtable(text, options){
     return mapColWithCi(rows, (col, ci)=>{
       return col === nullStr ? null : col;
     });
-  }else{
+  } else {
     return rows;
   }
 }
@@ -614,10 +614,10 @@ const AppM = Backbone.Model.extend({
       const i = col.indexOf(".");
       if (i >= 1) {
         return col.substring(i + 1);
-      }else{
+      } else {
         return col;
       }
-    }else{
+    } else {
       return col;
     }
   },
@@ -722,7 +722,7 @@ const AppM = Backbone.Model.extend({
       return ColContent.toHtml(head, wrapOnLf)
           + mkSpanHtml(SNIP_STR, "col_snip")
           + ColContent.toHtml(tail, wrapOnLf);
-    }else{
+    } else {
       return ColContent.toHtml(content, wrapOnLf);
     }
   },
@@ -754,7 +754,7 @@ const AppM = Backbone.Model.extend({
       cols.forEach((col)=>{
         if (isNumber(col)) {
           h += '<td class="right">';
-        }else{
+        } else {
           h += '<td>';
         }
         h += me._colContentToHtml(col) + '</td>';
@@ -786,7 +786,7 @@ const AppM = Backbone.Model.extend({
         return "NULL";
       } else if (col.match(/^now\(\)$/i)) {
         return "NOW()";
-      }else{
+      } else {
         return "'" + sqlEscape(col) + "'";
       }
     }
@@ -878,7 +878,7 @@ const AppM = Backbone.Model.extend({
     function convertCol(col){
       if (col == null) {
         return "NA";
-      }else{
+      } else {
         return '"' + col + '"';
       }
     }
